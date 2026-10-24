@@ -51,7 +51,48 @@ const SEED=[
 {id:'s1',uid:'',by:'fitme',title:'קארי חומוס וקוקוס',desc:'מטגנים בצל ושום, מוסיפים משחת קארי, חומוס, עגבניות משומרות וחלב קוקוס. מבשלים 15 דקות ומגישים עם אורז.',ing:['קופסת חומוס','קופסת חלב קוקוס','קופסת עגבניות','בצל אחד','2 כפות משחת קארי'],prep:10,cook:20,diff:'easy',cats:['vegan','budget'],img:'',alt:'',vid:'',tr:{en:{title:'Chickpea Coconut Curry',desc:'Fry onion and garlic, add curry paste, chickpeas, tinned tomatoes and coconut milk. Simmer 15 minutes. Serve with rice.',ing:['1 tin chickpeas','1 tin coconut milk','1 tin tomatoes','1 onion','2 tbsp curry paste']}}},
 {id:'s2',uid:'',by:'fitme',title:'פסטה במחבת אחת',desc:'מטגנים נקניקיות פרוסות, מוסיפים פסטה, רסק עגבניות ומים. מכסים ומבשלים כ־12 דקות עד שהפסטה רכה.',ing:['4 נקניקיות','200 גרם פסטה','400 גרם רסק עגבניות','500 מ״ל מים'],prep:5,cook:20,diff:'easy',cats:['meat','quick'],img:'',alt:'',vid:'',tr:{en:{title:'One-Pan Sausage Pasta',desc:'Brown sliced sausages, add pasta, passata and water. Cover and simmer about 12 minutes until tender.',ing:['4 sausages','200 g pasta','400 g passata','500 ml water']}}},
 {id:'s3',uid:'',by:'fitme',title:'שבלולי קינמון למעונות',desc:'מרדדים בצק מוכן, מורחים חמאה, סוכר וקינמון, מגלגלים, פורסים ואופים ב־180 מעלות 20 דקות.',ing:['אריזת בצק שמרים','50 גרם חמאה','60 גרם סוכר','2 כפיות קינמון'],prep:20,cook:20,diff:'med',cats:['pastry','veg'],img:'',alt:'',vid:'',tr:{en:{title:'Dorm-Room Cinnamon Rolls',desc:'Roll out ready dough, spread with butter, sugar and cinnamon, roll, slice and bake at 180 °C for 20 minutes.',ing:['1 pack yeast dough','50 g butter','60 g sugar','2 tsp cinnamon']}}}];
-let db=store.get('fm_db',null)||{users:[],recipes:SEED};db.recipes.forEach(r=>{if(r.by==='fitme')r.by='Dishboard'});const save=()=>store.set('fm_db',db);
+let db = { users: [], recipes: [...SEED] };
+db.recipes.forEach(r => { if (r.by === 'fitme') r.by = 'Dishboard'; });
+
+async function loadCloudData() {
+  try {
+    // טעינת מתכונים מהענן
+    const { data: recs, error: rErr } = await supabaseClient.from('recipes').select('*');
+    if (!rErr && recs && recs.length > 0) {
+      db.recipes = [...SEED, ...recs.filter(r => !SEED.some(s => s.id === r.id))];
+    }
+    
+    // אם המשתמש מחובר, נטען את האוספים שלו מהענן
+    const user = me();
+    if (user) {
+      const { data: colData, error: cErr } = await supabaseClient
+        .from('user_collections')
+        .select('*')
+        .eq('uid', user.id)
+        .single();
+      
+      if (!cErr && colData) {
+        user.cols = colData.cols || {};
+        user.skip = colData.skip || [];
+      }
+    }
+  } catch (e) {
+    console.error('שגיאה בטעינת נתונים מהענן:', e);
+  }
+}
+
+const save = async () => {
+  const user = me();
+  if (user) {
+    // שמירת אוספים לענן
+    await supabaseClient.from('user_collections').upsert({
+      uid: user.id,
+      cols: user.cols,
+      skip: user.skip,
+      updated_at: new Date()
+    });
+  }
+};
 let sess=null;try{sess=JSON.parse(sessionStorage.getItem('fm_s'))}catch(e){}
 function restore(){const rm=store.get('fm_rem',null);if(rm&&rm.exp>Date.now()){const u=db.users.find(x=>x.id===rm.uid);if(u&&u.tok&&u.tok===rm.tok){sess={uid:u.id,exp:Date.now()+18e5};return true}}return false}
 const me=()=>{if(!sess||sess.exp<Date.now()){sess=null;if(!restore())return null}sess.exp=Date.now()+18e5;try{sessionStorage.setItem('fm_s',JSON.stringify(sess))}catch(e){}const u=db.users.find(x=>x.id===sess.uid);if(u){u.cols=u.cols||(u.fav&&u.fav.length?{'מועדפים':u.fav}:{});u.skip=u.skip||[]}return u||null};
@@ -244,6 +285,11 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
       nav('home');
     }
   }
+});
+loadCloudData().then(() => {
+  applyLang();
+  go();
+  banner();
 });
 applyLang();go();banner();
 
