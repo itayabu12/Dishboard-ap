@@ -273,4 +273,13 @@ $('#tabs').replaceChildren(...TABS.map(([r,i],k)=>h('button',{type:'button',clas
 const lg=h('p',{class:'legal'},h('button',{class:'lnk',type:'button',onclick:()=>nav('privacy')},t('privacy')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>nav('terms')},t('terms')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>banner(true)},t('cookies')));
 main.replaceChildren(...(STATUS?[h('p',{class:'status',role:'status'},STATUS)]:[]),v,lg);STATUS='';document.title=t(route)+' – Dishboard';main.focus();window.scrollTo(0,0)}
 applyLang();go();banner();
-</script></body></html>
+
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('Service Worker Registered'));
+  }
+</script>
+<link rel="manifest" href="manifest.json">
+</body></html>
