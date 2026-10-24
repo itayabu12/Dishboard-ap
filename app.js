@@ -155,18 +155,17 @@ function card(r,u,ex){
     vl?h('a',{class:'btn alt',href:vl,target:'_blank',rel:'noopener noreferrer'},'▶ '+t('watch'),h('span',{class:'sr'},' – '+x.title)):'',
     h('div',{class:'row'},
       h('button',{class:'btn alt',type:'button','aria-pressed':String(!!fv),onclick:e=>fav(r,e.currentTarget)},t('save'),h('span',{class:'sr'},' – '+x.title)),
-      u&&r.uid===u.id?h('button',{class:'btn alt',type:'button',onclick:()=>dlg(t('delRT'),h('p',{},x.title+' – '+t('delRB')),[[t('del'),async ()=>{
+      u&&r.uid===u.id?h('button',{class:'btn alt',type:'button',onclick:()=>dlg(t('delRT'),h('p',{},x.title+' – '+t('delRB')),[[t('del',async ()=>{
         await supabaseClient.from('recipes').delete().eq('id', r.id);
         db.recipes=db.recipes.filter(z=>z.id!==r.id);
         db.users.forEach(z=>{for(const n in (z.cols||{}))z.cols[n]=z.cols[n].filter(i=>i!==r.id)});
         await save();
         STATUS=t('okDel');
         go();
-      },'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
+      }),'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
     )
   
 }
-
 const grid=(rs,u,ex)=>h('ul',{class:'grid'},...rs.map(r=>card(r,u,ex&&ex(r))));
 async function procImg(f){if(f.size>3e6)throw t('eImgS');const b=new Uint8Array(await f.slice(0,12).arrayBuffer());
 if(!((b[0]==255&&b[1]==216&&b[2]==255)||(b[0]==137&&b[1]==80&&b[2]==78&&b[3]==71)||(b[0]==82&&b[1]==73&&b[2]==70&&b[3]==70&&b[8]==87&&b[9]==69)))throw t('eImgT');
@@ -263,7 +262,7 @@ acc(u){
     h('p',{},t('dataNote')),
     h('div',{class:'row'},
       h('button',{class:'btn alt',type:'button',onclick:()=>{out();STATUS=t('okOut');nav('recipes')}},t('logout')),
-      h('button',{class:'btn danger',type:'button',onclick:()=>dlg(t('delAccT'),h('p',{},t('delAccB')),[[t('delAll'),async ()=>{
+      h('button',{class:'btn danger',type:'button',onclick:()=>dlg(t('delAccT'),h('p',{},t('delAccB')),[[t('delAll',async ()=>{
         const ids=db.recipes.filter(r=>r.uid===u.id).map(r=>r.id);
         if(ids.length>0){await supabaseClient.from('recipes').delete().in('id',ids);}
         await supabaseClient.from('user_collections').delete().eq('uid',u.id);
@@ -278,7 +277,7 @@ acc(u){
         out();
         STATUS=t('okAcc');
         nav('recipes');
-      },'danger'],[t('cancel'),null,'alt']])},t('delAcc'))
+      }),'danger'],[t('cancel'),null,'alt']])},t('delAcc'))
     )
   );
 }
