@@ -56,13 +56,10 @@ db.recipes.forEach(r => { if (r.by === 'fitme') r.by = 'Dishboard'; });
 
 async function loadCloudData() {
   try {
-    // טעינת מתכונים מהענן
     const { data: recs, error: rErr } = await supabaseClient.from('recipes').select('*');
     if (!rErr && recs && recs.length > 0) {
       db.recipes = [...SEED, ...recs.filter(r => !SEED.some(s => s.id === r.id))];
     }
-    
-    // אם המשתמש מחובר, נטען את האוספים שלו מהענן
     const user = me();
     if (user) {
       const { data: colData, error: cErr } = await supabaseClient
@@ -84,7 +81,6 @@ async function loadCloudData() {
 const save = async () => {
   const user = me();
   if (user) {
-    // שמירת אוספים לענן
     await supabaseClient.from('user_collections').upsert({
       uid: user.id,
       cols: user.cols,
@@ -120,15 +116,57 @@ const stem=w=>w.length>3?w.replace(/(ים|ות|ה)$/,''):w,words=s=>s.toLowerCas
 const hit=(ing,f)=>{const a=words(ing),b=words(f);return b.length>0&&b.every(w=>a.some(x=>(x.length>2&&w.includes(x))||(w.length>2&&x.includes(w))))};
 function rem(u,on){if(on){u.tok=crypto.randomUUID();save();store.set('fm_rem',{uid:u.id,tok:u.tok,exp:Date.now()+2592e6})}}
 function deck(u){const have=Object.values(u.cols).flat();return db.recipes.filter(r=>r.uid!==u.id&&!u.skip.includes(r.id)&&!have.includes(r.id))}
-function pickFolder(r,u,done){const base=lang==='he'?['לבשל השבוע','ימים עמוסים','אירוח','מתוקים']:['Cook this week','Busy days','Hosting','Sweet things'],names=[...new Set([...Object.keys(u.cols),...base])],nw=h('input',{id:'nf',maxlength:'40',autocomplete:'off'});
-const put=(n,e)=>{n=clean(n,40);if(!n)return;u.cols[n]=u.cols[n]||[];if(!u.cols[n].includes(r.id))u.cols[n].push(r.id);save();e.currentTarget.closest('dialog').close();done(n)};
-dlg(t('pickT'),h('div',{},h('div',{class:'chips'},...names.map(n=>h('button',{type:'button',class:'btn alt',onclick:e=>put(n,e)},n))),h('label',{for:'nf'},t('pickN')),nw,h('div',{class:'row'},h('button',{type:'button',class:'btn',onclick:e=>put(nw.value,e)},t('addF')))),[[t('cancel'),null,'alt']])}
-function card(r,u,ex){const x=(lang!=='he'&&r.tr&&r.tr[lang])||r,ok=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(r.img||''),fv=u&&Object.values(u.cols).some(a=>a.includes(r.id)),vl=vurl(r.vid);
-return h('li',{class:'card'},ok?h('img',{src:r.img,alt:r.alt,loading:'lazy'}):ph(r),h('h2',{},x.title),h('p',{class:'meta'},(r.prep+r.cook)+' '+t('mins')+' · '+t(r.diff)+' · '+t('by')+' '+r.by),h('p',{class:'tags'},...r.cats.map(c=>h('span',{class:'tag'},t(c)))),
-ex?h('p',{class:'match'},ex):'',h('details',{},h('summary',{},t('ingH')+' · '+t('method')),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),
-vl?h('a',{class:'btn alt',href:vl,target:'_blank',rel:'noopener noreferrer'},'▶ '+t('watch'),h('span',{class:'sr'},' – '+x.title)):'',
-h('div',{class:'row'},h('button',{class:'btn alt',type:'button','aria-pressed':String(!!fv),onclick:e=>fav(r,e.currentTarget)},t('save'),h('span',{class:'sr'},' – '+x.title)),
-u&&r.uid===u.id?h('button',{class:'btn alt',type:'button',onclick:()=>dlg(t('delRT'),h('p',{},x.title+' – '+t('delRB')),[[t('del'),()=>{db.recipes=db.recipes.filter(z=>z.id!==r.id);db.users.forEach(z=>{for(const n in (z.cols||{}))z.cols[n]=z.cols[n].filter(i=>i!==r.id)});save();STATUS=t('okDel');go()},'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):''))}
+function pickFolder(r,u,done){
+  const base=lang==='he'?['לבשל השבוע','ימים עמוסים','אירוח','מתוקים']:['Cook this week','Busy days','Hosting','Sweet things'];
+  const names=[...new Set([...Object.keys(u.cols),...base])];
+  const nw=h('input',{id:'nf',maxlength:'40',autocomplete:'off'});
+  const put=(n,e)=>{
+    n=clean(n,40);
+    if(!n)return;
+    u.cols[n]=u.cols[n]||[];
+    if(!u.cols[n].includes(r.id))u.cols[n].push(r.id);
+    save();
+    e.currentTarget.closest('dialog').close();
+    done(n);
+  };
+  dlg(t('pickT'),h('div',{},
+    h('div',{class:'chips'},...names.map(n=>h('button',{type:'button',class:'btn alt',onclick:e=>put(n,e)},n))),
+    h('label',{for:'nf'},t('pickN')),
+    nw,
+    h('div',{class:'row'},h('button',{type:'button',class:'btn',onclick:e=>put(nw.value,e)},t('addF')))
+  ),[[t('cancel'),null,'alt']]);
+}
+function card(r,u,ex){
+  const x=(lang!=='he'&&r.tr&&r.tr[lang])||r,
+        ok=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(r.img||''),
+        fv=u&&Object.values(u.cols).some(a=>a.includes(r.id)),
+        vl=vurl(r.vid);
+  return h('li',{class:'card'},
+    ok?h('img',{src:r.img,alt:r.alt,loading:'lazy'}):ph(r),
+    h('h2',{},x.title),
+    h('p',{class:'meta'},(r.prep+r.cook)+' '+t('mins')+' · '+t(r.diff)+' · '+t('by')+' '+r.by),
+    h('p',{class:'tags'},...r.cats.map(c=>h('span',{class:'tag'},t(c)))),
+    ex?h('p',{class:'match'},ex):'',
+    h('details',{},
+      h('summary',{},t('ingH')+' · '+t('method')),
+      h('ul',{},...x.ing.map(i=>h('li',{},i))),
+      h('p',{},x.desc)
+    ),
+    vl?h('a',{class:'btn alt',href:vl,target:'_blank',rel:'noopener noreferrer'},'▶ '+t('watch'),h('span',{class:'sr'},' – '+x.title)):'',
+    h('div',{class:'row'},
+      h('button',{class:'btn alt',type:'button','aria-pressed':String(!!fv),onclick:e=>fav(r,e.currentTarget)},t('save'),h('span',{class:'sr'},' – '+x.title)),
+      u&&r.uid===u.id?h('button',{class:'btn alt',type:'button',onclick:()=>dlg(t('delRT'),h('p',{},x.title+' – '+t('delRB')),[[t('del'),async ()=>{
+        await supabaseClient.from('recipes').delete().eq('id', r.id);
+        db.recipes=db.recipes.filter(z=>z.id!==r.id);
+        db.users.forEach(z=>{for(const n in (z.cols||{}))z.cols[n]=z.cols[n].filter(i=>i!==r.id)});
+        await save();
+        STATUS=t('okDel');
+        go();
+      },'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
+    )
+  
+}
+
 const grid=(rs,u,ex)=>h('ul',{class:'grid'},...rs.map(r=>card(r,u,ex&&ex(r))));
 async function procImg(f){if(f.size>3e6)throw t('eImgS');const b=new Uint8Array(await f.slice(0,12).arrayBuffer());
 if(!((b[0]==255&&b[1]==216&&b[2]==255)||(b[0]==137&&b[1]==80&&b[2]==78&&b[3]==71)||(b[0]==82&&b[1]==73&&b[2]==70&&b[3]==70&&b[8]==87&&b[9]==69)))throw t('eImgT');
@@ -166,23 +204,86 @@ stage.append(el,sy,sn)}
 draw();return h('section',{},h('h1',{},t('discover')),h('p',{class:'lede'},t('swipeH')),stage,ctl,info,live)},
 saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:()=>{u.cols[n]=u.cols[n].filter(i=>i!==r.id);if(!u.cols[n].length)delete u.cols[n];save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
 home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h1',{},t('hi')+u.name),h('section',{'aria-labelledby':'mp'},h('h2',{id:'mp'},t('mypage')),h('p',{class:'meta'},mine.length+' '+t('recipes')+' · '+Object.values(u.cols).flat().length+' '+t('saved'))),h('h2',{},t('myRec')),mine.length?grid(mine,u):h('p',{class:'meta'},t('noMine')))},
-add(u){const cats=h('fieldset',{},h('legend',{},t('cats')),h('div',{style:'display:flex;flex-wrap:wrap'},...CATS.map(c=>h('label',{class:'cb'},h('input',{type:'checkbox',value:c}),t(c)))));
-const f=h('form',{novalidate:true,'aria-labelledby':'sh',onsubmit:async e=>{e.preventDefault();const q=i=>f.querySelector('#'+i),errs=[],T=clean(q('t').value,80),d=clean(q('d').value,1500),ing=q('i').value.split('\n').map(x=>clean(x,120)).filter(Boolean).slice(0,40),pr=+q('p').value,ck=+q('c').value,file=q('im').files[0],alt=clean(q('a').value,150),vr=q('v').value.trim();
-if(T.length<3)errs.push({id:'t',msg:t('eTitle')});if(!ing.length)errs.push({id:'i',msg:t('eIng')});if(d.length<10)errs.push({id:'d',msg:t('eMeth')});
-if(q('p').value===''||!(pr>=0&&pr<=600))errs.push({id:'p',msg:t('eTime')});if(q('c').value===''||!(ck>=0&&ck<=600))errs.push({id:'c',msg:t('eTime')});
-if(vr&&!vurl(vr))errs.push({id:'v',msg:t('eVid')});if(file&&alt.length<5)errs.push({id:'a',msg:t('eAlt')});
-let img='';if(file&&!errs.length){try{img=await procImg(file)}catch(x){errs.push({id:'im',msg:String(x)})}}
-showErrs(f,errs);if(errs.length)return;
-db.recipes.unshift({id:crypto.randomUUID(),uid:u.id,by:u.name,title:T,desc:d,ing,prep:pr,cook:ck,diff:q('df').value,cats:[...cats.querySelectorAll('input:checked')].map(x=>x.value),img,alt:img?alt:'',vid:vr?vurl(vr):''});save();STATUS=t('okPub');nav('home')}},
-sum(),fld(t('title'),'t',h('input',{id:'t',maxlength:'80','aria-required':'true'})),fld(t('ingF'),'i',h('textarea',{id:'i',rows:'5','aria-required':'true'})),fld(t('method'),'d',h('textarea',{id:'d',rows:'5',maxlength:'1500','aria-required':'true'})),
-fld(t('prep'),'p',h('input',{id:'p',type:'number',min:'0',max:'600',inputmode:'numeric','aria-required':'true'})),fld(t('cook'),'c',h('input',{id:'c',type:'number',min:'0',max:'600',inputmode:'numeric','aria-required':'true'})),
-fld(t('diff'),'df',h('select',{id:'df'},...['easy','med','hard'].map(x=>h('option',{value:x},t(x))))),cats,
-fld(t('img'),'im',h('input',{id:'im',type:'file',accept:'image/jpeg,image/png,image/webp'}),t('imgH')),fld(t('alt'),'a',h('input',{id:'a',maxlength:'150'}),t('altH')),
-fld(t('vid'),'v',h('input',{id:'v',type:'url',inputmode:'url',dir:'ltr',autocomplete:'off'}),t('vidH')),h('div',{class:'row'},h('button',{class:'btn',type:'submit'},t('publish'))));
-return h('section',{},h('h1',{id:'sh'},t('add')),f)},
-acc(u){const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};return h('section',{},h('h1',{},t('acc')),h('p',{},u.name+' · '+u.email),h('p',{},t('dataNote')),
-h('div',{class:'row'},h('button',{class:'btn alt',type:'button',onclick:()=>{out();STATUS=t('okOut');nav('recipes')}},t('logout')),
-h('button',{class:'btn danger',type:'button',onclick:()=>dlg(t('delAccT'),h('p',{},t('delAccB')),[[t('delAll'),()=>{const ids=db.recipes.filter(r=>r.uid===u.id).map(r=>r.id);db.recipes=db.recipes.filter(r=>r.uid!==u.id);db.users=db.users.filter(x=>x.id!==u.id);db.users.forEach(x=>{for(const n in (x.cols||{}))x.cols[n]=x.cols[n].filter(i=>!ids.includes(i))});save();out();STATUS=t('okAcc');nav('recipes')},'danger'],[t('cancel'),null,'alt']])},t('delAcc'))))}};
+async add(u){
+  const cats=h('fieldset',{},h('legend',{},t('cats')),h('div',{style:'display:flex;flex-wrap:wrap'},...CATS.map(c=>h('label',{class:'cb'},h('input',{type:'checkbox',value:c}),t(c)))));
+  const f=h('form',{novalidate:true,'aria-labelledby':'sh',onsubmit:async e=>{
+    e.preventDefault();
+    const q=i=>f.querySelector('#'+i),errs=[],T=clean(q('t').value,80),d=clean(q('d').value,1500),ing=q('i').value.split('\n').map(x=>clean(x,120)).filter(Boolean).slice(0,40),pr=+q('p').value,ck=+q('c').value,file=q('im').files[0],alt=clean(q('a').value,150),vr=q('v').value.trim();
+    if(T.length<3)errs.push({id:'t',msg:t('eTitle')});if(!ing.length)errs.push({id:'i',msg:t('eIng')});if(d.length<10)errs.push({id:'d',msg:t('eMeth')});
+    if(q('p').value===''||!(pr>=0&&pr<=600))errs.push({id:'p',msg:t('eTime')});if(q('c').value===''||!(ck>=0&&ck<=600))errs.push({id:'c',msg:t('eTime')});
+    if(vr&&!vurl(vr))errs.push({id:'v',msg:t('eVid')});if(file&&alt.length<5)errs.push({id:'a',msg:t('eAlt')});
+    let img='';if(file&&!errs.length){try{img=await procImg(file)}catch(x){errs.push({id:'im',msg:String(x)})}}
+    showErrs(f,errs);if(errs.length)return;
+
+    const newRecipe = {
+      id: crypto.randomUUID(),
+      uid: u.id,
+      by: u.name,
+      title: T,
+      desc: d,
+      ing,
+      prep: pr,
+      cook: ck,
+      diff: q('df').value,
+      cats: [...cats.querySelectorAll('input:checked')].map(x => x.value),
+      img,
+      alt: img ? alt : '',
+      vid: vr ? vurl(vr) : ''
+    };
+
+    const { error: insErr } = await supabaseClient.from('recipes').insert([newRecipe]);
+    if (insErr) {
+      console.error('שגיאה בשמירת המתכון בענן:', insErr.message);
+    }
+
+    db.recipes.unshift(newRecipe);
+    STATUS = t('okPub');
+    nav('home');
+  }},
+  sum(),
+  fld(t('title'),'t',h('input',{id:'t',maxlength:'80','aria-required':'true'})),
+  fld(t('ingF'),'i',h('textarea',{id:'i',rows:'5','aria-required':'true'})),
+  fld(t('method'),'d',h('textarea',{id:'d',rows:'5',maxlength:'1500','aria-required':'true'})),
+  fld(t('prep'),'p',h('input',{id:'p',type:'number',min:'0',max:'600',inputmode:'numeric','aria-required':'true'})),
+  fld(t('cook'),'c',h('input',{id:'c',type:'number',min:'0',max:'600',inputmode:'numeric','aria-required':'true'})),
+  fld(t('diff'),'df',h('select',{id:'df'},...['easy','med','hard'].map(x=>h('option',{value:x},t(x))))),
+  cats,
+  fld(t('img'),'im',h('input',{id:'im',type:'file',accept:'image/jpeg,image/png,image/webp'}),t('imgH')),
+  fld(t('alt'),'a',h('input',{id:'a',maxlength:'150'}),t('altH')),
+  fld(t('vid'),'v',h('input',{id:'v',type:'url',inputmode:'url',dir:'ltr',autocomplete:'off'}),t('vidH')),
+  h('div',{class:'row'},h('button',{class:'btn',type:'submit'},t('publish')))
+  );
+  return h('section',{},h('h1',{id:'sh'},t('add')),f);
+},
+acc(u){
+  const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};
+  return h('section',{},
+    h('h1',{},t('acc')),
+    h('p',{},u.name+' · '+u.email),
+    h('p',{},t('dataNote')),
+    h('div',{class:'row'},
+      h('button',{class:'btn alt',type:'button',onclick:()=>{out();STATUS=t('okOut');nav('recipes')}},t('logout')),
+      h('button',{class:'btn danger',type:'button',onclick:()=>dlg(t('delAccT'),h('p',{},t('delAccB')),[[t('delAll'),async ()=>{
+        const ids=db.recipes.filter(r=>r.uid===u.id).map(r=>r.id);
+        if(ids.length>0){await supabaseClient.from('recipes').delete().in('id',ids);}
+        await supabaseClient.from('user_collections').delete().eq('uid',u.id);
+        db.recipes=db.recipes.filter(r=>r.uid!==u.id);
+        db.users=db.users.filter(x=>x.id!==u.id);
+        db.users.forEach(x=>{
+          for(const n in (x.cols||{})){
+            x.cols[n]=x.cols[n].filter(i=>!ids.includes(i));
+          }
+        });
+        await save();
+        out();
+        STATUS=t('okAcc');
+        nav('recipes');
+      },'danger'],[t('cancel'),null,'alt']])},t('delAcc'))
+    )
+  );
+}
+};
+
 const legal = (k, s) => () => h('section', {}, 
   h('h1', {}, t(k)), 
   h('p', { class: 'meta' }, lang === 'he' ? 'עדכון אחרון: אוקטובר 2026' : 'Last updated: October 2026'),
@@ -225,7 +326,8 @@ const legal = (k, s) => () => h('section', {},
 );
 
 V.privacy = legal('privacy', 'secP');
-V.terms = legal('terms', 'secT');V.privacy=legal('privacy','secP');V.terms=legal('terms','secT');
+V.terms = legal('terms', 'secT');
+
 function auth(){const up=mode==='up';const f=h('form',{novalidate:true,onsubmit:async e=>{e.preventDefault();const q=i=>f.querySelector('#'+i)?.value||'',em=q('ae').trim().toLowerCase(),pw=q('ap'),errs=[];
 if(!up){if(Date.now()<lock)errs.push({id:'ae',msg:t('eLock')});else{const u=db.users.find(x=>x.email===em),hh=await hash(pw,u?unb(u.salt):new Uint8Array(16));
 if(!u||hh!==u.hash){if(++fails>=5){lock=Date.now()+3e4;fails=0}errs.push({id:'ae',msg:t('eBad')})}else{fails=0;sess={uid:u.id,exp:Date.now()+18e5};rem(u,f.querySelector('#ar').checked);STATUS=t('okIn');route='home';return go()}}showErrs(f,errs)}
@@ -248,6 +350,7 @@ h('button',{class:'btn alt',type:'button',onclick:async ()=>{
   });
   if (error) console.error('שגיאה בהתחברות:', error.message);
 }},t('google')),f)}
+
 const TABS=[['recipes','recipes'],['discover','discover'],['home','home'],['add','plus'],['saved','saved']];
 function go(){const u=me();if(!V[route])route='recipes';let v;if(['discover','saved','home','add'].includes(route)&&!u){if(!STATUS)STATUS=t('need');v=auth()}else v=V[route](u);
 $('#tabs').replaceChildren(...TABS.map(([r,i],k)=>h('button',{type:'button',class:k===2?'mid':'','aria-current':r===route?'page':false,onclick:()=>nav(r)},h('span',{class:'ic'},ic(i)),h('span',{},t(r)))));
@@ -258,8 +361,6 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
   if (session) {
     const em = session.user.email;
     let u = db.users.find(x => x.email === em);
-    
-    // יצירת משתמש מקומי אם הוא לא קיים
     if (!u) {
       u = { 
         id: session.user.id, 
@@ -271,25 +372,18 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
       db.users.push(u);
       save();
     }
-    
-    // בדיקה אם המשתמש כרגע נחשב "מנותק" במערכת שלנו
     const justLoggedIn = !me();
-    
-    // עדכון החיבור
     sess = { uid: u.id, exp: Date.now() + 18e5 };
     sessionStorage.setItem('fm_s', JSON.stringify(sess));
-    
-    // מעבר לעמוד הראשי של המשתמש רק אם הוא בדיוק התחבר
     if (justLoggedIn) {
       STATUS = t('okIn');
       nav('home');
     }
   }
 });
+
 loadCloudData().then(() => {
   applyLang();
   go();
   banner();
 });
-applyLang();go();banner();
-
