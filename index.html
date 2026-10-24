@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<!-- הגדרות אפליקציה (PWA) -->
+<!-- הגדרות PWA ואייקון -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff7e67">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,3 +16,19 @@
 <meta name="apple-mobile-web-app-title" content="Dishboard">
 <link rel="apple-touch-icon" href="icon.png?v=2">
 </head>
+<body>
+<a class="skip" href="#main" id="skip"></a>
+<header>
+  <button class="btn alt" type="button" id="sb" aria-haspopup="dialog"></button>
+  <a class="brand" href="#" id="brand" style="text-decoration:none">Dishboard</a>
+  <button class="btn alt" type="button" id="ab" aria-haspopup="dialog"></button>
+</header>
+<main id="main" tabindex="-1"></main>
+<nav class="tabs" id="tabs"></nav>
+
+<!-- טעינת Supabase והקבצים שלנו -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
