@@ -158,7 +158,12 @@ h('label',{class:'cb',for:'ar'},h('input',{type:'checkbox',id:'ar'}),t('remember
 h('div',{class:'row'},h('button',{class:'btn',type:'submit'},t(up?'signup':'login'))));
 return h('section',{},h('h1',{},t(up?'signup':'login')),h('div',{class:'chips',role:'group'},...[['in','login'],['up','signup']].map(([m,l])=>h('button',{type:'button',class:'chip','aria-pressed':String(mode===m),onclick:()=>{mode=m;go()}},t(l)))),
 h('button',{class:'btn alt',type:'button',onclick:async ()=>{
-  const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
+  const { error } = await supabaseClient.auth.signInWithOAuth({ 
+    provider: 'google',
+    options: {
+      redirectTo: 'https://itayabu12.github.io/Dishboard-ap/'
+    }
+  });
   if (error) console.error('שגיאה בהתחברות:', error.message);
 }},t('google')),f)}
 const TABS=[['recipes','recipes'],['discover','discover'],['home','home'],['add','plus'],['saved','saved']];
