@@ -176,7 +176,12 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
     const em = session.user.email;
     let u = db.users.find(x => x.email === em);
     
-    // אם זה משתמש חדש, ניצור לו פרופיל מקומי
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    const em = session.user.email;
+    let u = db.users.find(x => x.email === em);
+    
+    // יצירת משתמש מקומי אם הוא לא קיים
     if (!u) {
       u = { 
         id: session.user.id, 
@@ -189,11 +194,15 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
       save();
     }
     
-    // הגדרת החיבור באפליקציה ומעבר לעמוד הראשי
+    // בדיקה אם המשתמש כרגע נחשב "מנותק" במערכת שלנו
+    const justLoggedIn = !me();
+    
+    // עדכון החיבור
     sess = { uid: u.id, exp: Date.now() + 18e5 };
     sessionStorage.setItem('fm_s', JSON.stringify(sess));
     
-    if (route !== 'home') {
+    // מעבר לעמוד הראשי של המשתמש רק אם הוא בדיוק התחבר
+    if (justLoggedIn) {
       STATUS = t('okIn');
       nav('home');
     }
