@@ -89,7 +89,7 @@ vl?h('a',{class:'btn alt',href:vl,target:'_blank',rel:'noopener noreferrer'},'�
 h('div',{class:'row'},h('button',{class:'btn alt',type:'button','aria-pressed':String(!!fv),onclick:e=>fav(r,e.currentTarget)},t('save'),h('span',{class:'sr'},' – '+x.title)),
 u&&r.uid===u.id?h('button',{class:'btn alt',type:'button',onclick:()=>dlg(t('delRT'),h('p',{},x.title+' – '+t('delRB')),[[t('del'),()=>{db.recipes=db.recipes.filter(z=>z.id!==r.id);db.users.forEach(z=>{for(const n in (z.cols||{}))z.cols[n]=z.cols[n].filter(i=>i!==r.id)});save();STATUS=t('okDel');go()},'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):''))}
 const grid=(rs,u,ex)=>h('ul',{class:'grid'},...rs.map(r=>card(r,u,ex&&ex(r))));
-async function procImg(f){if(f.size>10e6)throw t('eImgS');const b=new Uint8Array(await f.slice(0,12).arrayBuffer());
+async function procImg(f){if(f.size>3e6)throw t('eImgS');const b=new Uint8Array(await f.slice(0,12).arrayBuffer());
 if(!((b[0]==255&&b[1]==216&&b[2]==255)||(b[0]==137&&b[1]==80&&b[2]==78&&b[3]==71)||(b[0]==82&&b[1]==73&&b[2]==70&&b[3]==70&&b[8]==87&&b[9]==69)))throw t('eImgT');
 let bm;try{bm=await createImageBitmap(f)}catch(e){throw t('eImgR')}
 const s=Math.min(1,800/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.round(bm.width*s);c.height=Math.round(bm.height*s);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.8)}
@@ -142,8 +142,49 @@ return h('section',{},h('h1',{id:'sh'},t('add')),f)},
 acc(u){const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};return h('section',{},h('h1',{},t('acc')),h('p',{},u.name+' · '+u.email),h('p',{},t('dataNote')),
 h('div',{class:'row'},h('button',{class:'btn alt',type:'button',onclick:()=>{out();STATUS=t('okOut');nav('recipes')}},t('logout')),
 h('button',{class:'btn danger',type:'button',onclick:()=>dlg(t('delAccT'),h('p',{},t('delAccB')),[[t('delAll'),()=>{const ids=db.recipes.filter(r=>r.uid===u.id).map(r=>r.id);db.recipes=db.recipes.filter(r=>r.uid!==u.id);db.users=db.users.filter(x=>x.id!==u.id);db.users.forEach(x=>{for(const n in (x.cols||{}))x.cols[n]=x.cols[n].filter(i=>!ids.includes(i))});save();out();STATUS=t('okAcc');nav('recipes')},'danger'],[t('cancel'),null,'alt']])},t('delAcc'))))}};
-const legal=(k,s)=>()=>h('section',{},h('h1',{},t(k)),h('p',{class:'status'},t('ph')),...t(s).split('|').flatMap(x=>[h('h2',{},x),h('p',{},'…')]));
-V.privacy=legal('privacy','secP');V.terms=legal('terms','secT');
+const legal = (k, s) => () => h('section', {}, 
+  h('h1', {}, t(k)), 
+  h('p', { class: 'meta' }, lang === 'he' ? 'עדכון אחרון: אוקטובר 2026' : 'Last updated: October 2026'),
+  ...t(s).split('|').flatMap((x, i) => {
+    const texts = {
+      privacy: [
+        'אנו מכבדים את פרטיותך. המידע היחיד שאנו אוספים הוא כתובת האימייל ושם התצוגה שלך בעת התחברות דרך Google, לצורך ניהול החשבון והמתכונים שלך.',
+        'המידע משמש אך ורק לתפעול האפליקציה, שמירת המועדפים שלך והמתכונים שאתה מעלה. איננו מוכרים או מעבירים מידע לצדדים שלישיים.',
+        'הנתונים נשמרים באחסון המקומי של המכשיר שלך ובמסד הנתונים המאובטח של Supabase. באפשרותך למחוק את החשבון וכל הנתונים לצמיתות בכל עת דרך עמוד החשבון.',
+        'יש לך זכות מלאה לעיין במידע שנשמר עליך, לעדכן אותו או לדרוש את מחיקתו המלאה בכל רגע נתון.',
+        'לשאלות או בקשות בנושא פרטיות, ניתן לפנות דרך ערוצי הקהילה או לפתח את הקוד בגיטהאב.'
+      ],
+      terms: [
+        'השימוש באפליקציית Dishboard ובשירותי הקהילה כפוף לתנאים המפורטים במסמך זה. השימוש מעיד על הסכמתך לתנאים.',
+        'כל מתכון, תמונה או תוכן שאתה מעלה לאפליקציה נשאר בבעלותך, אך אתה מעניק לאפליקציה רישיון להציג אותו למשתמשים אחרים במסגרת שיתוף המתכונים.',
+        'חל איסור מוחלט להעלות תכנים פוגעניים, מפרי זכויות יוצרים או בלתי חוקיים. ההנהלה רשאית להסיר תוכן או חסום משתמשים שיפרו תנאים אלו.',
+        'השירות ניתנת כמות שהוא (As-Is). איננו אחראים לזמינות הרציפה של השירות או לאובדן מידע בלתי צפוי.',
+        'לכל שאלה משפטית או פנייה בנוגע לתנאי השימוש, ניתן ליצור קשר דרך עמוד הפרויקט ב-GitHub.'
+      ]
+    };
+    const enTexts = {
+      privacy: [
+        'We respect your privacy. The only data we collect is your email and display name via Google sign-in to manage your account and recipes.',
+        'Data is used solely to operate the app, save favorites, and store uploaded recipes. We never sell or share data with third parties.',
+        'Data is stored locally on your device and securely in Supabase. You can permanently delete your account and data at any time from your account page.',
+        'You have the right to access, update, or request full deletion of your personal data at any moment.',
+        'For privacy-related inquiries, you can reach out via our project repository.'
+      ],
+      terms: [
+        'Using Dishboard is subject to these terms. Usage implies your agreement to these conditions.',
+        'You retain ownership of any recipes or images you upload, but grant us a license to display them within the app community.',
+        'Uploading offensive, copyrighted, or illegal content is strictly prohibited. We reserve the right to remove content and block violators.',
+        'The service is provided on an "as-is" basis. We are not liable for service interruptions or unexpected data loss.',
+        'For any legal questions regarding these terms, please contact us via GitHub.'
+      ]
+    };
+    const paragraphText = (lang === 'he' ? texts[k]?.[i] : enTexts[k]?.[i]) || '…';
+    return [h('h2', {}, x), h('p', {}, paragraphText)];
+  })
+);
+
+V.privacy = legal('privacy', 'secP');
+V.terms = legal('terms', 'secT');V.privacy=legal('privacy','secP');V.terms=legal('terms','secT');
 function auth(){const up=mode==='up';const f=h('form',{novalidate:true,onsubmit:async e=>{e.preventDefault();const q=i=>f.querySelector('#'+i)?.value||'',em=q('ae').trim().toLowerCase(),pw=q('ap'),errs=[];
 if(!up){if(Date.now()<lock)errs.push({id:'ae',msg:t('eLock')});else{const u=db.users.find(x=>x.email===em),hh=await hash(pw,u?unb(u.salt):new Uint8Array(16));
 if(!u||hh!==u.hash){if(++fails>=5){lock=Date.now()+3e4;fails=0}errs.push({id:'ae',msg:t('eBad')})}else{fails=0;sess={uid:u.id,exp:Date.now()+18e5};rem(u,f.querySelector('#ar').checked);STATUS=t('okIn');route='home';return go()}}showErrs(f,errs)}
