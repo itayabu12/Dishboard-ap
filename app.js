@@ -171,4 +171,32 @@ function go(){const u=me();if(!V[route])route='recipes';let v;if(['discover','sa
 $('#tabs').replaceChildren(...TABS.map(([r,i],k)=>h('button',{type:'button',class:k===2?'mid':'','aria-current':r===route?'page':false,onclick:()=>nav(r)},h('span',{class:'ic'},ic(i)),h('span',{},t(r)))));
 const lg=h('p',{class:'legal'},h('button',{class:'lnk',type:'button',onclick:()=>nav('privacy')},t('privacy')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>nav('terms')},t('terms')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>banner(true)},t('cookies')));
 main.replaceChildren(...(STATUS?[h('p',{class:'status',role:'status'},STATUS)]:[]),v,lg);STATUS='';document.title=t(route)+' – Dishboard';main.focus();window.scrollTo(0,0)}
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    const em = session.user.email;
+    let u = db.users.find(x => x.email === em);
+    
+    // אם זה משתמש חדש, ניצור לו פרופיל מקומי
+    if (!u) {
+      u = { 
+        id: session.user.id, 
+        email: em, 
+        name: session.user.user_metadata?.full_name || em.split('@')[0], 
+        cols: {}, 
+        skip: [] 
+      };
+      db.users.push(u);
+      save();
+    }
+    
+    // הגדרת החיבור באפליקציה ומעבר לעמוד הראשי
+    sess = { uid: u.id, exp: Date.now() + 18e5 };
+    sessionStorage.setItem('fm_s', JSON.stringify(sess));
+    
+    if (route !== 'home') {
+      STATUS = t('okIn');
+      nav('home');
+    }
+  }
+});
 applyLang();go();banner();
