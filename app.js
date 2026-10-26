@@ -206,22 +206,42 @@ home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h
 add(u){
   const cats=h('fieldset',{},h('legend',{},t('cats')),h('div',{style:'display:flex;flex-wrap:wrap'},...CATS.map(c=>h('label',{class:'cb'},h('input',{type:'checkbox',value:c}),t(c)))));
   
-  // פונקציית סריקה חכמה (OCR סימולציוני / חילוץ נתונים אוטומטי מתמונה)
+  // פונקציית סריקה חכמה אמיתית באמצעות OCR (Tesseract.js)
   const scanInput=h('input',{type:'file',accept:'image/*',style:'display:none',onchange:async e=>{
     const file=e.target.files[0];
     if(!file)return;
-    STATUS = lang==='he' ? 'סורק את התמונה ומחלץ את פרטי המתכון...' : 'Scanning image and extracting recipe details...';
+    STATUS = lang==='he' ? 'סורק את התמונה ומחלץ את הטקסט...' : 'Scanning image and extracting text...';
     go();
-    setTimeout(()=>{
-      // מילוי אוטומטי של שדות להדגמה / זיהוי חכם
-      f.querySelector('#t').value = lang==='he' ? 'מתכון סרוק חדש' : 'Scanned Recipe';
-      f.querySelector('#i').value = lang==='he' ? '1 כוס קמח\n1 ביצה\nקורט מלח' : '1 cup flour\n1 egg\npinch of salt';
-      f.querySelector('#d').value = lang==='he' ? 'לערבב את כל החומרים בקערה, לאפות בתנור על 180 מעלות כ-20 דקות עד להזהבה.' : 'Mix all ingredients in a bowl, bake at 180C for 20 minutes.';
-      f.querySelector('#p').value = '10';
-      f.querySelector('#c').value = '20';
-      STATUS = lang==='he' ? 'המתכון פוענח בהצלחה! אפשר לעבור וללחוץ פרסום.' : 'Recipe scanned successfully! You can now publish.';
-      go();
-    }, 1500);
+    
+    try {
+      // שימוש ב-Tesseract לזיהוי טקסט בעברית ובאנגלית מתוך התמונה
+      const { data: { text } } = await Tesseract.recognize(file, 'heb+eng', {
+        logger: m => console.log(m)
+      });
+      
+      if(text && text.trim().length > 0) {
+        // פיצול שורות הטקסט שחולצו מהתמונה
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        
+        // השורה הראשונה תוגדר כשם המתכון
+        const scannedTitle = lines[0] || (lang==='he' ? 'מתכון סרוק' : 'Scanned Recipe');
+        
+        // חלוקת שאר הטקסט למצרכים ואופן הכנה בסיסי
+        f.querySelector('#t').value = scannedTitle;
+        f.querySelector('#i').value = lines.slice(1, 10).join('\n') || (lang==='he' ? '1. לפי הטעם' : '1. To taste');
+        f.querySelector('#d').value = lines.slice(10).join('\n') || text;
+        f.querySelector('#p').value = '15';
+        f.querySelector('#c').value = '30';
+        
+        STATUS = lang==='he' ? 'המתכון פוענח מהתמונה בהצלחה! אפשר לעבור וללחוץ פרסום.' : 'Recipe extracted successfully from image!';
+      } else {
+        throw new Error('No text found');
+      }
+    } catch (err) {
+      console.error('שגיאה בסריקת OCR:', err);
+      STATUS = lang==='he' ? 'לא הצלחנו לזהות טקסט ברור בתמונה. נסו שוב או הזנו ידנית.' : 'Could not read text from image. Try again.';
+    }
+    go();
   }});
 
   const scanBtn=h('button',{type:'button',class:'btn alt',onclick:()=>scanInput.click()},t('scanRecipe'));
