@@ -230,18 +230,16 @@ home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h
 add(u) {
     const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
     
-    // פונקציית סריקה מקומית ובטוחה
+    // סריקה מקומית ישירה לשדות
     const onScan = async e => {
       const file = e.target.files[0]; if (!file) return;
       const st = f.querySelector('#scs');
-      const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
+      const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null) el.value = v };
       
-      if (st) st.textContent = 'סורק טקסט בעברית (זה ייקח כמה שניות)...'; 
+      if (st) st.textContent = 'סורק טקסט בעברית...'; 
       e.target.disabled = true;
       
       try {
-        if (typeof Tesseract === 'undefined') throw new Error('Tesseract not loaded');
-
         const { data: { text } } = await Tesseract.recognize(file, 'heb');
         if (!text || text.trim() === '') throw new Error('לא זוהה טקסט');
         
@@ -249,7 +247,7 @@ add(u) {
         const mid = Math.floor(lines.length / 2);
         
         set('t', lines[0] || 'מתכון סרוק');
-        set('i', lines.slice(1, mid).join('\n') || lines.slice(1, 5).join('\n'));
+        set('i', lines.slice(1, mid).join('\n'));
         set('d', lines.slice(mid).join('\n') || text);
         set('p', '15');
         set('c', '45');
@@ -257,7 +255,7 @@ add(u) {
         if (st) st.textContent = 'הסריקה הושלמה בהצלחה!';
       } catch (err) {
         console.error(err);
-        if (st) st.textContent = 'הסריקה נכשלה. נסה תמונה ברורה יותר.';
+        if (st) st.textContent = 'הסריקה נכשלה.';
       } finally {
         e.target.disabled = false;
         e.target.value = '';
@@ -265,7 +263,7 @@ add(u) {
     };
 
     const scanInput = h('input', { type: 'file', accept: 'image/*', style: 'display:none', onchange: onScan });
-    const scanBtn = h('button', { type: 'button', class: 'btn alt', style: 'margin-bottom: 1rem;', onclick: () => scanInput.click() }, 'סריקת מתכון מתמונה');
+    const scanBtn = h('button', { type: 'button', class: 'btn alt', style: 'margin-bottom: 1rem;', onclick: () => scanInput.click() }, '📸 סריקת מתכון מתמונה');
 
     const f = h('form', {
       novalidate: true, 'aria-labelledby': 'sh', onsubmit: async e => {
@@ -289,7 +287,7 @@ add(u) {
           }
           const row = { id: crypto.randomUUID(), uid: u.id, by: u.name, title: T, desc: d, ing, prep: pr, cook: ck, diff: q('df').value, cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), img, alt: img ? alt : '', vid: vr ? vurl(vr) : '' };
           const { data, error } = await SB.from('recipes').insert(row).select().single();
-          if (error) { console.error('Saving the recipe failed:', error); throw new Error(t('eSave')) }
+          if (error) throw new Error(t('eSave'));
           db.recipes.unshift(norm(data)); STATUS = t('okPub'); nav('home');
         } catch (x) {
           if (path) SB.storage.from(BUCKET).remove([path]);
