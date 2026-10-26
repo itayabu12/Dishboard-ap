@@ -230,7 +230,43 @@ home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h
 add(u) {
     const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
     
-    // יצירת טופס ההזנה המלא (מוסתר בהתחלה אם בוחרים סריקה, או שמוצג מיד)
+    // פונקציית סריקה מקומית בעברית שמתעדכנת ישירות לתוך השדות
+    const onScan = async e => {
+      const file = e.target.files[0]; if (!file) return;
+      const st = f.querySelector('#scs');
+      const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
+      
+      st.textContent = lang === 'he' ? 'סורק טקסט בעברית (זה ייקח כמה שניות)...' : 'Scanning...'; 
+      e.target.disabled = true;
+      
+      try {
+        if (typeof Tesseract === 'undefined') throw new Error('Tesseract not loaded');
+
+        const { data: { text } } = await Tesseract.recognize(file, 'heb');
+        if (!text || text.trim() === '') throw new Error('לא זוהה טקסט');
+        
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        const mid = Math.floor(lines.length / 2);
+        
+        set('t', lines[0] || 'מתכון סרוק');
+        set('i', lines.slice(1, mid).join('\n') || lines.slice(1, 5).join('\n'));
+        set('d', lines.slice(mid).join('\n') || text);
+        set('p', '15');
+        set('c', '45');
+        
+        st.textContent = lang === 'he' ? 'הסריקה הושלמה בהצלחה!' : 'Scan complete.';
+      } catch (err) {
+        console.error(err);
+        st.textContent = lang === 'he' ? 'הסריקה נכשלה. נסה תמונה ברורה יותר.' : 'Scan failed.';
+      } finally {
+        e.target.disabled = false;
+        e.target.value = '';
+      }
+    };
+
+    const scanInput = h('input', { type: 'file', accept: 'image/*', style: 'display:none', onchange: onScan });
+    const scanBtn = h('button', { type: 'button', class: 'btn alt', style: 'margin-bottom: 1rem;', onclick: () => scanInput.click() }, t('scanB') || 'סריקת מתכון מתמונה');
+
     const f = h('form', {
       novalidate: true, 'aria-labelledby': 'sh', onsubmit: async e => {
         e.preventDefault();
@@ -263,6 +299,8 @@ add(u) {
       }
     },
       sum(),
+      h('div', {}, scanBtn, scanInput),
+      h('p', { id: 'scs', class: 'meta', role: 'status' }),
       fld(t('title'), 't', h('input', { id: 't', maxlength: '80', 'aria-required': 'true' })),
       fld(t('ingF'), 'i', h('textarea', { id: 'i', rows: '5', 'aria-required': 'true' })),
       fld(t('method'), 'd', h('textarea', { id: 'd', rows: '5', maxlength: '1500', 'aria-required': 'true' })),
@@ -275,82 +313,8 @@ add(u) {
       fld(t('vid'), 'v', h('input', { id: 'v', type: 'url', inputmode: 'url', dir: 'ltr', autocomplete: 'off' }), t('vidH')),
       h('div', { class: 'row' }, h('button', { class: 'btn', type: 'submit' }, t('publish')))
     );
-
-    // פונקציית סריקה חכמה שמפרידה בין מצרכים לאופן הכנה לפי מילות מפתח בטקסט
-    const scanInput = h('input', { type: 'file', accept: 'image/*', style: 'display:none', onchange: async e => {
-      const file = e.target.files[0]; if (!file) return;
-      
-      const st = h('p', { class: 'meta', role: 'status' }, lang === 'he' ? 'סורק ומנתח טקסט בעברית...' : 'Scanning...');
-      const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
-      
-      // הצגת הודעת טעינה זמנית
-      dlg(lang === 'he' ? 'סטטוס סריקה' : 'Scanning', st, []);
-      
-      try {
-        const { data: { text } } = await Tesseract.recognize(file, 'heb');
-        if (!text || text.trim() === '') throw new Error('לא זוהה טקסט');
-        
-        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-        
-        let title = lines[0] || 'מתכון סרוק';
-        let ingredients = [];
-        let methodLines = [];
-        let currentMode = 'general'; // יכול להיות ingredients או method
-        
-        for (let i = 1; i < lines.length; i++) {
-          const l = lines[i];
-          if (l.includes('רכיבים') || l.includes('מצרכים')) {
-            currentMode = 'ingredients';
-            continue;
-          } else if (l.includes('הכנה') || l.includes('אופן')) {
-            currentMode = 'method';
-            continue;
-          }
-          
-          if (currentMode === 'ingredients') {
-            ingredients.push(l);
-          } else if (currentMode === 'method') {
-            methodLines.push(l);
-          } else {
-            // אם המערכת עוד לא זיהתה כותרת ברורה, נחלק חצי-חצי או נכניס להכנה
-            methodLines.push(l);
-          }
-        }
-        
-        // אם לא נמצאו מצרכים מוגדרים במפורש, ניקח את השורות הראשונות כמצרכים
-        if (ingredients.length === 0 && methodLines.length > 5) {
-          ingredients = methodLines.slice(0, 5);
-          methodLines = methodLines.slice(5);
-        }
-
-        set('t', title);
-        set('i', ingredients.join('\n') || lines.slice(1, 6).join('\n'));
-        set('d', methodLines.join('\n') || text);
-        set('p', '15');
-        set('c', '45');
-
-        document.querySelector('dialog')?.close();
-      } catch (err) {
-        console.error(err);
-        alert(lang === 'he' ? 'הסריקה נכשלה, נסה תמונה אחרת.' : 'Scan failed.');
-        document.querySelector('dialog')?.close();
-      }
-    }});
-
-    // מסך הבחירה בין הזנה ידנית להעלאת תמונה
-    const choiceBox = h('div', { class: 'choice-box', style: 'text-align:center; padding: 2rem 0;' },
-      h('h2', {}, lang === 'he' ? 'איך תרצה להוסיף את המתכון?' : 'How would you like to add the recipe?'),
-      h('div', { class: 'row', style: 'justify-content: center; gap: 1rem; margin-top: 1.5rem;' },
-        h('button', { type: 'button', class: 'btn', onclick: () => { wrapper.replaceWith(f); } }, lang === 'he' ? '✏️ הזנה ידנית' : 'Manual Entry'),
-        h('button', { type: 'button', class: 'btn alt', onclick: () => scanInput.click() }, lang === 'he' ? '📸 העלאת תמונה / סריקה (AI)' : 'Upload Image / Scan')
-      ),
-      scanInput
-    );
-
-    const wrapper = h('section', {}, h('h1', { id: 'sh' }, t('add')), choiceBox);
-    return wrapper;
+    return h('section', {}, h('h1', { id: 'sh' }, t('add')), f);
   },
-  
 acc(u){
   const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};
   return h('section',{},
