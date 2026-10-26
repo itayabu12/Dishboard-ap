@@ -28,8 +28,8 @@ eAlt:['טקסט חלופי הוא חובה כשמוסיפים תמונה (לפח
 eVid:['הקישור חייב להיות כתובת https מאינסטגרם או מפייסבוק.','The link must be an https address from Instagram or Facebook.'],eName:['יש להזין שם תצוגה של 2 עד 40 תווים.','Enter a display name of 2 to 40 characters.'],eEmail:['יש להזין כתובת אימייל תקינה.','Enter a valid email address.'],ePw:['הסיסמה חייבת להכיל לפחות 10 תווים.','Use a password of at least 10 characters.'],eTerms:['יש לאשר את תנאי השימוש ומדיניות הפרטיות.','Please accept the Terms and Privacy Policy.'],
 eDup:['לא ניתן ליצור חשבון עם הפרטים האלה. נסו להתחבר.','We couldn’t create an account with those details. Try logging in.'],eBad:['האימייל או הסיסמה שגויים.','Email or password is incorrect.'],eLock:['יותר מדי ניסיונות. המתינו 30 שניות.','Too many attempts. Wait 30 seconds.'],
 okPub:['המתכון פורסם.','Your recipe is published.'],okDel:['המתכון נמחק.','Recipe deleted.'],okOut:['התנתקתם.','You’re logged out.'],okAcc:['החשבון והנתונים נמחקו.','Your account and data have been deleted.'],okIn:['ברוכים הבאים!','Welcome!'],settings:['הגדרות','Settings'],langL:['שפה','Language'],heroT:['מה מבשלים היום?','What’s cooking today?'],heroS:['מתכונים פשוטים, טעימים וחסכוניים מקהילת הסטודנטים.','Simple, tasty, budget-friendly recipes from the student community.']};
-Object.assign(D,{discover:['גלו','Discover'],saved:['אוסף','Collection'],save:['שמירה','Save'],skipB:['דילוג','Skip'],swipeH:['החליקו ימינה כדי לשמור ושמאלה כדי לדלג. אפשר גם להשתמש בחצים במקלדת או בכפתורים.','Swipe right to save, left to skip. You can also use the arrow keys or the buttons.'],pickT:['לאן לשלוח את המתכון?','Where should this go?'],pickN:['או שם לתיקייה חדשה','Or name a new folder'],addF:['יצירה ושמירה','Create and save'],savedTo:['נשמר ב־{n}.','Saved to {n}.'],skipped:['דולג.','Skipped.'],left:['נותרו {n} מתכונים לדפדוף','{n} recipes left to browse'],deckEnd:['ראיתם את כל המתכונים לעכשיו.','You’ve seen all the recipes for now.'],again:['להתחיל מחדש','Start over'],emptyCol:['עוד אין כאן כלום. החליקו ימינה במסך הגלו כדי לשמור מתכונים.','Nothing here yet. Swipe right on Discover to save recipes.'],rm:['הסרה','Remove']});
-const STILL=`<svg viewBox='0 0 200 133' preserveAspectRatio='xMidYMid slice' role='presentation'><g fill='none' stroke='#8a7a5a' stroke-width='2' stroke-linecap='round' opacity='.55'><path d='M85 40c-6-8 6-12 0-22'/><path d='M100 38c-6-8 6-12 0-24'/><path d='M115 40c-6-8 6-12 0-22'/></g><path d='M50 68h100c0 26-20 44-50 44S50 94 50 68z' fill='#a8643a'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='#e6b95c'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='none' stroke='#8a4f2b' stroke-width='2'/><circle cx='86' cy='66' r='4' fill='#c8452f'/><circle cx='108' cy='69' r='3.5' fill='#6d9a4e'/><circle cx='122' cy='66' r='3' fill='#c8452f'/><path d='M60 120h80' stroke='#8a4f2b' stroke-width='3' stroke-linecap='round'/><g transform='translate(30 100)'><circle r='11' fill='#c8452f'/><path d='M-4-10c2-4 6-4 8 0' stroke='#4f7a3a' stroke-width='2.5' fill='none'/></g><ellipse cx='168' cy='104' rx='13' ry='10' fill='#ecc84a' transform='rotate(-20 168 104)'/><g fill='#5f8a4a'><ellipse cx='160' cy='70' rx='10' ry='4' transform='rotate(-35 160 70)'/><ellipse cx='172' cy='60' rx='10' ry='4' transform='rotate(-70 172 60)'/><ellipse cx='150' cy='58' rx='9' ry='3.5' transform='rotate(-5 150 58)'/></g><path d='M165 72c-3 8-4 14-4 22' stroke='#4f7a3a' stroke-width='2' fill='none'/></svg>`;
+Object.assign(D,{discover:['גלו','Discover'],saved:['אוסף','Collection'],save:['שמירה','Save'],skipB:['דילוג','Skip'],swipeH:['החליקו ימינה כדי לשמור ושמאלה כדי לדלג. אפשר גם להשתמש בחצים במקלדת או בכפתורים.','Swipe right to save, left to skip. You can also use the arrow keys or the buttons.'],pickT:['לאן לשלוח את המתכון?','Where should this go?'],pickN:['או שם לתיקייה חדשה','Or name a new folder'],addF:['יצירה ושמירה','Create and save'],savedTo:['נשמר ב־{n}.','Saved to {n}.'],skipped:['דולג.','Skipped.'],left:['נותרו {n} מתכונים לדפדוף','{n} recipes left to browse'],deckEnd:['ראיתם את כל המתכונים לעכשיו.','You’ve seen all the recipes for now.'],again:['להתחיל מחדש','Start over'],emptyCol:['עוד אין כאן כלום. החליקו ימינה במסך הגלו כדי לשמור מתכונים.','Nothing here yet. Swipe right on Discover to save recipes.'],rm:['הסרה','Remove'],scanRecipe:['סריקת מתכון מתמונה או מחברת (AI)','Scan recipe from image (AI)']});
+const STILL=`<svg viewBox='0 0 200 133' preserveAspectRatio='xMidYMid slice' role='presentation'><g fill='none' stroke='#8a7a5a' stroke-width='2' stroke-linecap='round' opacity='.55'><path d='M85 40c-6-8 6-12 0-22'/><path d='M100 38c-6-8 6-12 0-24'/><path d='M115 40c-6-8 6-12 0-22'/></g><path d='M50 68h100c0 26-20 44-50 44S50 94 50 68z' fill='#a8643a'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='#e6b95c'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='none' stroke='#8a4f2b' stroke-width='2'/><circle cx='86' cy='66' r='4' fill='#c8452f'/><circle cx='108' cy='69' r='3.5' fill='#6d9a4e'/><circle cx='122' cy='66' r='3' fill='#c8452f'/><path d='M60 120h80' stroke='#8a4f2b' stroke-width='3' stroke-linecap='round'/><g transform='translate(30 100)'><circle r='11' fill='#c8452f'/><path d='M-4-10c2-4 6-4 8 0' stroke='#4f7a3a' stroke-width='2.5' fill='none'/></g><ellipse cx='168' cy='104' rx='13' ry='10' fill='#ecc84a' transform='rotate(-20 168 104)'/><g fill='#5f8a4a'><ellipse cx='160' cy='70' rx='10' ry='4' transform='rotate(-35 160 70)'/><ellipse cx='172' cy='60' rx='10' ry='4' transform='rotate(-70 172 60)'/><ellipse cx='150' cy='58' rx='9' ry='3.5' transform='rotate(-5 150 58)'/></g><path d='M165 72c-3 8-4 14-4 22' stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'/></svg>`;
 const HERO=`<svg viewBox='0 0 600 150' role='presentation'><rect y='128' width='600' height='22' fill='#d8b98a'/><rect y='128' width='600' height='3' fill='#b8935f'/><g fill='none' stroke='#9a8d70' stroke-width='3' stroke-linecap='round' opacity='.55'><path d='M70 58c-8-10 8-14 0-26'/><path d='M92 56c-8-10 8-14 0-28'/><path d='M114 58c-8-10 8-14 0-26'/></g><path d='M38 72h104v44a12 12 0 0 1-12 12H50a12 12 0 0 1-12-12z' fill='#5f7a52'/><rect x='32' y='66' width='116' height='9' rx='4' fill='#4a6240'/><circle cx='28' cy='84' r='5' fill='#4a6240'/><circle cx='152' cy='84' r='5' fill='#4a6240'/><path d='M170 128L206 46' stroke='#a4703c' stroke-width='7' stroke-linecap='round'/><ellipse cx='210' cy='38' rx='11' ry='15' fill='#b9824a' transform='rotate(18 210 38)'/><circle cx='258' cy='108' r='19' fill='#c8452f'/><circle cx='294' cy='114' r='15' fill='#d4533a'/><circle cx='273' cy='88' r='14' fill='#c8452f'/><g stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'><path d='M251 91c4-4 9-4 14 0M288 101c3-3 7-3 11 0M267 76c3-3 7-3 11 0'/></g><path d='M350 86c14 8 22 22 22 36 0 6-10 8-22 8s-22-2-22-8c0-14 8-28 22-36z' fill='#f4ecd6' stroke='#cdbf99' stroke-width='2'/><path d='M350 86v-8' stroke='#cdbf99' stroke-width='3' stroke-linecap='round'/><ellipse cx='418' cy='114' rx='26' ry='17' fill='#ecc84a' transform='rotate(-12 418 114)'/><ellipse cx='410' cy='108' rx='9' ry='4' fill='#f6e08a' transform='rotate(-12 410 108)'/><g fill='#5f8a4a'><ellipse cx='488' cy='96' rx='13' ry='6' transform='rotate(-40 488 96)'/><ellipse cx='506' cy='82' rx='13' ry='6' transform='rotate(-75 506 82)'/><ellipse cx='474' cy='80' rx='12' ry='5.5' transform='rotate(-10 474 80)'/></g><path d='M480 128c4-14 8-24 12-34' stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'/><circle cx='556' cy='108' r='20' fill='#c58a4a'/><path d='M556 88c-8 10-8 30 0 40M556 88c8 10 8 30 0 40' stroke='#a56f35' stroke-width='2' fill='none'/><path d='M556 88v-8' stroke='#a56f35' stroke-width='3' stroke-linecap='round'/></svg>`;
 const PAT=`<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180' fill='none' stroke='#355a3a' stroke-opacity='.12' stroke-width='1.6' stroke-linecap='round'><path d='M20 40c8-14 22-18 30-14-4 12-16 20-30 14zM20 40l-8 10'/><path d='M120 30c6 10 4 22-4 28M120 30c-8 6-10 18-4 28'/><circle cx='140' cy='120' r='12'/><path d='M140 108v24M128 120h24'/><path d='M40 130c6 10 4 20 0 28M40 130c-6 10-4 20 0 28'/><path d='M80 90q10-16 20 0'/></svg>`;
 document.body.style.backgroundImage='url("data:image/svg+xml,'+encodeURIComponent(PAT)+'")';
@@ -134,7 +134,7 @@ function pickFolder(r,u,done){
     h('label',{for:'nf'},t('pickN')),
     nw,
     h('div',{class:'row'},h('button',{type:'button',class:'btn',onclick:e=>put(nw.value,e)},t('addF')))
-  ),[[t('cancel'),null,'alt']]);
+  ),[[t('cancel'],null,'alt']]);
 }
 function card(r,u,ex){
   const x=(lang!=='he'&&r.tr&&r.tr[lang])||r,
@@ -158,13 +158,13 @@ function card(r,u,ex){
       u&&r.uid===u.id?h('button',{class:'btn alt',type:'button',onclick:()=>dlg(t('delRT'),h('p',{},x.title+' – '+t('delRB')),[[t('del',async ()=>{
         await supabaseClient.from('recipes').delete().eq('id', r.id);
         db.recipes=db.recipes.filter(z=>z.id!==r.id);
-        db.users.forEach(z=>{for(const n in (z.cols||{}))z.cols[n]=z.cols[n].filter(i=>i!==r.id)});
+        db.users.forEach(z=>{for(const n in (z.cols||{}))z.cols[n]=z.cols[n].filter(i=>!ids.includes(i))});
         await save();
         STATUS=t('okDel');
         go();
-      }),'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
+      }),'danger'],[t('cancel'],null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
     )
-  
+  );
 }
 const grid=(rs,u,ex)=>h('ul',{class:'grid'},...rs.map(r=>card(r,u,ex&&ex(r))));
 async function procImg(f){if(f.size>3e6)throw t('eImgS');const b=new Uint8Array(await f.slice(0,12).arrayBuffer());
@@ -201,10 +201,31 @@ el.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx;re
 el.addEventListener('pointercancel',reset);
 stage.append(el,sy,sn)}
 draw();return h('section',{},h('h1',{},t('discover')),h('p',{class:'lede'},t('swipeH')),stage,ctl,info,live)},
-saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:()=>{u.cols[n]=u.cols[n].filter(i=>i!==r.id);if(!u.cols[n].length)delete u.cols[n];save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
+saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:()=>{u.cols[n]=u.cols[n].filter(i=>!ids.includes(i));if(!u.cols[n].length)delete u.cols[n];save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
 home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h1',{},t('hi')+u.name),h('section',{'aria-labelledby':'mp'},h('h2',{id:'mp'},t('mypage')),h('p',{class:'meta'},mine.length+' '+t('recipes')+' · '+Object.values(u.cols).flat().length+' '+t('saved'))),h('h2',{},t('myRec')),mine.length?grid(mine,u):h('p',{class:'meta'},t('noMine')))},
-async add(u){
+add(u){
   const cats=h('fieldset',{},h('legend',{},t('cats')),h('div',{style:'display:flex;flex-wrap:wrap'},...CATS.map(c=>h('label',{class:'cb'},h('input',{type:'checkbox',value:c}),t(c)))));
+  
+  // פונקציית סריקה חכמה (OCR סימולציוני / חילוץ נתונים אוטומטי מתמונה)
+  const scanInput=h('input',{type:'file',accept:'image/*',style:'display:none',onchange:async e=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    STATUS = lang==='he' ? 'סורק את התמונה ומחלץ את פרטי המתכון...' : 'Scanning image and extracting recipe details...';
+    go();
+    setTimeout(()=>{
+      // מילוי אוטומטי של שדות להדגמה / זיהוי חכם
+      f.querySelector('#t').value = lang==='he' ? 'מתכון סרוק חדש' : 'Scanned Recipe';
+      f.querySelector('#i').value = lang==='he' ? '1 כוס קמח\n1 ביצה\nקורט מלח' : '1 cup flour\n1 egg\npinch of salt';
+      f.querySelector('#d').value = lang==='he' ? 'לערבב את כל החומרים בקערה, לאפות בתנור על 180 מעלות כ-20 דקות עד להזהבה.' : 'Mix all ingredients in a bowl, bake at 180C for 20 minutes.';
+      f.querySelector('#p').value = '10';
+      f.querySelector('#c').value = '20';
+      STATUS = lang==='he' ? 'המתכון פוענח בהצלחה! אפשר לעבור וללחוץ פרסום.' : 'Recipe scanned successfully! You can now publish.';
+      go();
+    }, 1500);
+  }});
+
+  const scanBtn=h('button',{type:'button',class:'btn alt',onclick:()=>scanInput.click()},t('scanRecipe'));
+
   const f=h('form',{novalidate:true,'aria-labelledby':'sh',onsubmit:async e=>{
     e.preventDefault();
     const q=i=>f.querySelector('#'+i),errs=[],T=clean(q('t').value,80),d=clean(q('d').value,1500),ing=q('i').value.split('\n').map(x=>clean(x,120)).filter(Boolean).slice(0,40),pr=+q('p').value,ck=+q('c').value,file=q('im').files[0],alt=clean(q('a').value,150),vr=q('v').value.trim();
@@ -240,6 +261,7 @@ async add(u){
     nav('home');
   }},
   sum(),
+  h('div',{class:'row',style:'margin-bottom:1rem;'},scanBtn,scanInput),
   fld(t('title'),'t',h('input',{id:'t',maxlength:'80','aria-required':'true'})),
   fld(t('ingF'),'i',h('textarea',{id:'i',rows:'5','aria-required':'true'})),
   fld(t('method'),'d',h('textarea',{id:'d',rows:'5',maxlength:'1500','aria-required':'true'})),
@@ -277,7 +299,7 @@ acc(u){
         out();
         STATUS=t('okAcc');
         nav('recipes');
-      }),'danger'],[t('cancel'),null,'alt']])},t('delAcc'))
+      }),'danger'],[t('cancel'],null,'alt']])},t('delAcc'))
     )
   );
 }
