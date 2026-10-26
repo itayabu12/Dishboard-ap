@@ -230,13 +230,13 @@ home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h
 add(u) {
     const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
     
-    // פונקציית סריקה מקומית בעברית שמתעדכנת ישירות לתוך השדות
+    // פונקציית סריקה מקומית ובטוחה
     const onScan = async e => {
       const file = e.target.files[0]; if (!file) return;
       const st = f.querySelector('#scs');
       const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
       
-      st.textContent = lang === 'he' ? 'סורק טקסט בעברית (זה ייקח כמה שניות)...' : 'Scanning...'; 
+      if (st) st.textContent = 'סורק טקסט בעברית (זה ייקח כמה שניות)...'; 
       e.target.disabled = true;
       
       try {
@@ -254,10 +254,10 @@ add(u) {
         set('p', '15');
         set('c', '45');
         
-        st.textContent = lang === 'he' ? 'הסריקה הושלמה בהצלחה!' : 'Scan complete.';
+        if (st) st.textContent = 'הסריקה הושלמה בהצלחה!';
       } catch (err) {
         console.error(err);
-        st.textContent = lang === 'he' ? 'הסריקה נכשלה. נסה תמונה ברורה יותר.' : 'Scan failed.';
+        if (st) st.textContent = 'הסריקה נכשלה. נסה תמונה ברורה יותר.';
       } finally {
         e.target.disabled = false;
         e.target.value = '';
@@ -265,7 +265,7 @@ add(u) {
     };
 
     const scanInput = h('input', { type: 'file', accept: 'image/*', style: 'display:none', onchange: onScan });
-    const scanBtn = h('button', { type: 'button', class: 'btn alt', style: 'margin-bottom: 1rem;', onclick: () => scanInput.click() }, t('scanB') || 'סריקת מתכון מתמונה');
+    const scanBtn = h('button', { type: 'button', class: 'btn alt', style: 'margin-bottom: 1rem;', onclick: () => scanInput.click() }, 'סריקת מתכון מתמונה');
 
     const f = h('form', {
       novalidate: true, 'aria-labelledby': 'sh', onsubmit: async e => {
