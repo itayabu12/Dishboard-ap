@@ -244,6 +244,7 @@ add(u){
   }});
 
   const scanBtn=h('button',{id:'scan-btn',type:'button',class:'btn alt',onclick:()=>scanInput.click()},t('scanRecipe'));
+  
   const f=h('form',{novalidate:true,'aria-labelledby':'sh',onsubmit:async e=>{
     e.preventDefault();
     const q=i=>f.querySelector('#'+i),errs=[],T=clean(q('t').value,80),d=clean(q('d').value,1500),ing=q('i').value.split('\n').map(x=>clean(x,120)).filter(Boolean).slice(0,40),pr=+q('p').value,ck=+q('c').value,file=q('im').files[0],alt=clean(q('a').value,150),vr=q('v').value.trim();
