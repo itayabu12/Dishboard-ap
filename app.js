@@ -205,13 +205,16 @@ saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.rec
 home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h1',{},t('hi')+u.name),h('section',{'aria-labelledby':'mp'},h('h2',{id:'mp'},t('mypage')),h('p',{class:'meta'},mine.length+' '+t('recipes')+' · '+Object.values(u.cols).flat().length+' '+t('saved'))),h('h2',{},t('myRec')),mine.length?grid(mine,u):h('p',{class:'meta'},t('noMine')))},
 add(u){
   const cats=h('fieldset',{},h('legend',{},t('cats')),h('div',{style:'display:flex;flex-wrap:wrap'},...CATS.map(c=>h('label',{class:'cb'},h('input',{type:'checkbox',value:c}),t(c)))));
-  
+ 
   // פונקציית סריקה חכמה אמיתית באמצעות OCR (Tesseract.js)
   const scanInput=h('input',{type:'file',accept:'image/*',style:'display:none',onchange:async e=>{
     const file=e.target.files[0];
     if(!file)return;
-    STATUS = lang==='he' ? 'סורק את התמונה ומחלץ את הטקסט...' : 'Scanning image and extracting text...';
-    go();
+    
+    const btn = document.getElementById('scan-btn');
+    const origText = btn.textContent;
+    btn.textContent = lang==='he' ? 'מפענח טקסט (זה עשוי לקחת כמה שניות)...' : 'Scanning...';
+    btn.disabled = true;
     
     try {
       const { data: { text } } = await Tesseract.recognize(file, 'heb+eng');
@@ -219,40 +222,28 @@ add(u){
       if(text && text.trim().length > 0) {
         const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
         
-        // מציאת השדות בטופס והזנת ערכים תקינים שעוברים את הבדיקות
-        const titleEl = f.querySelector('#t');
-        const ingEl = f.querySelector('#i');
-        const descEl = f.querySelector('#d');
-        const prepEl = f.querySelector('#p');
-        const cookEl = f.querySelector('#c');
-
-        if(titleEl) titleEl.value = lines[0] || (lang==='he' ? 'מתכון סרוק חדש' : 'Scanned Recipe');
-        if(ingEl) ingEl.value = lines.slice(1, 12).join('\n') || (lang==='he' ? '1 כוס קמח\n1 ביצה' : '1 cup flour\n1 egg');
-        if(descEl) descEl.value = lines.slice(12).join('\n') || text;
+        // עדכון ישיר של השדות הקיימים ב-DOM מבלי לרנדר מחדש את העמוד
+        document.getElementById('t').value = lines[0] || (lang==='he' ? 'מתכון סרוק' : 'Scanned Recipe');
+        document.getElementById('i').value = lines.slice(1, 12).join('\n') || '';
+        document.getElementById('d').value = lines.slice(12).join('\n') || text;
+        document.getElementById('p').value = '15';
+        document.getElementById('c').value = '30';
         
-        // הגדרת ערכי ברירת מחדל חוקיים לזמנים כדי שאימות הטופס לא יתלונן
-        if(prepEl) prepEl.value = '15';
-        if(cookEl) cookEl.value = '20';
-        
-        STATUS = lang==='he' ? 'המתכון פוענח בהצלחה! אפשר לעבור וללחוץ פרסום.' : 'Recipe extracted successfully!';
+        alert(lang==='he' ? 'המתכון פוענח בהצלחה! מומלץ לעבור על הטקסט ולתקן לפני הפרסום.' : 'Recipe extracted successfully!');
       } else {
         throw new Error('No text found');
       }
     } catch (err) {
       console.error('שגיאה בסריקת OCR:', err);
-      // במקרה של שגיאה בסריקה, נזין ערכי ברירת מחדל כדי שהמשתמש יוכל לפרסם בכל זאת
-      f.querySelector('#t').value = lang==='he' ? 'מתכון מתמונה' : 'Image Recipe';
-      f.querySelector('#i').value = lang==='he' ? 'מצרך לדוגמה' : 'Sample ingredient';
-      f.querySelector('#d').value = lang==='he' ? 'אופן הכנה מפורט כאן לפי התמונה.' : 'Detailed method here.';
-      f.querySelector('#p').value = '10';
-      f.querySelector('#c').value = '15';
-      STATUS = lang==='he' ? 'הטקסט זוהה באופן חלקי, הוזנו ערכים לבדיקה.' : 'Text partially recognized.';
+      alert(lang==='he' ? 'לא הצלחנו לזהות טקסט ברור בתמונה. נסו שוב או הזנו ידנית.' : 'Could not read text from image.');
     }
-    go();
+    
+    btn.textContent = origText;
+    btn.disabled = false;
+    e.target.value = ''; // איפוס כדי שיהיה אפשר להעלות את אותה תמונה שוב במידת הצורך
   }});
 
-  const scanBtn=h('button',{type:'button',class:'btn alt',onclick:()=>scanInput.click()},t('scanRecipe'));
-
+  const scanBtn=h('button',{id:'scan-btn',type:'button',class:'btn alt',onclick:()=>scanInput.click()},t('scanRecipe'));
   const f=h('form',{novalidate:true,'aria-labelledby':'sh',onsubmit:async e=>{
     e.preventDefault();
     const q=i=>f.querySelector('#'+i),errs=[],T=clean(q('t').value,80),d=clean(q('d').value,1500),ing=q('i').value.split('\n').map(x=>clean(x,120)).filter(Boolean).slice(0,40),pr=+q('p').value,ck=+q('c').value,file=q('im').files[0],alt=clean(q('a').value,150),vr=q('v').value.trim();
