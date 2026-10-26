@@ -212,44 +212,34 @@ add(u) {
       const st = f.querySelector('#scs');
       const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
       
-      st.textContent = t('scanning'); 
+      st.textContent = lang === 'he' ? 'סורק טקסט בעברית (זה ייקח כמה שניות)...' : 'Scanning...'; 
       e.target.disabled = true;
       
       try {
-        let rc = await scanRecipe(file);
-        if (!rc) { st.textContent = t('scanNo'); return }
+        // השינוי הקריטי: הגדרנו 'heb' בלבד! בלי אנגלית, כדי שלא ימציא אותיות.
+        const { data: { text } } = await Tesseract.recognize(file, 'heb', {
+          logger: m => console.log(m)
+        });
         
-        // טיפול חכם למקרה שה-AI מחזיר טקסט גולמי, Markdown או JSON שבור
-        if (typeof rc === 'string') {
-          try {
-            const match = rc.match(/\{[\s\S]*\}/);
-            if (match) rc = JSON.parse(match[0]);
-          } catch(e) {}
-          
-          if (typeof rc === 'string') {
-            const lines = rc.split('\n').map(l => l.trim()).filter(Boolean);
-            rc = { 
-              title: lines[0], 
-              ingredients: lines.slice(1, 10), 
-              method: lines.slice(10).join('\n') 
-            };
-          }
-        }
-
-        set('t', rc.title || rc.name || (lang === 'he' ? 'מתכון סרוק' : 'Scanned Recipe'));
-        set('i', Array.isArray(rc.ingredients) ? rc.ingredients.join('\n') : (rc.ingredients || (lang === 'he' ? 'מצרכים חסרים' : 'Missing ingredients')));
-        set('d', rc.method || rc.instructions || rc.desc || (lang === 'he' ? 'אופן הכנה' : 'Method'));
-        set('p', rc.prep || 15);
-        set('c', rc.cook || 30);
-        
-        if (rc.difficulty && ['easy', 'med', 'hard'].includes(rc.difficulty)) set('df', rc.difficulty);
-        if (rc.categories && Array.isArray(rc.categories)) {
-          cats.querySelectorAll('input').forEach(x => x.checked = rc.categories.includes(x.value));
+        if (!text || text.trim() === '') {
+          throw new Error('לא זוהה טקסט בתמונה');
         }
         
-        st.textContent = t('scanOk');
+        // פירוק הטקסט לשורות וניקוי שורות ריקות
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        const mid = Math.floor(lines.length / 2);
+        
+        // כפייה של הערכים לתוך השדות כדי שהפרסום יעבור
+        set('t', lines[0] || (lang === 'he' ? 'מתכון סרוק' : 'Scanned Recipe'));
+        set('i', lines.slice(1, mid).join('\n') || (lang === 'he' ? 'מצרכים חסרים' : 'Ingredients'));
+        set('d', lines.slice(mid).join('\n') || text);
+        set('p', '15'); // מזינים זמן כדי שלא תהיה שגיאה אדומה
+        set('c', '45');
+        
+        st.textContent = lang === 'he' ? 'המתכון פוענח! כדאי לעבור עליו ולתקן מעט לפני הפרסום.' : 'Recipe extracted!';
       } catch (x) { 
-        st.textContent = (x && x.message) || t('scanErr');
+        console.error('OCR Error:', x);
+        st.textContent = (x && x.message) || t('scanErr') || 'הסריקה נכשלה';
       } finally { 
         e.target.disabled = false; 
         e.target.value = ''; 
