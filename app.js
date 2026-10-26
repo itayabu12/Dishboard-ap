@@ -134,7 +134,7 @@ function pickFolder(r,u,done){
     h('label',{for:'nf'},t('pickN')),
     nw,
     h('div',{class:'row'},h('button',{type:'button',class:'btn',onclick:e=>put(nw.value,e)},t('addF')))
-  ),[[t('cancel'],null,'alt']]);
+  ),[[t('cancel'),null,'alt']]);
 }
 function card(r,u,ex){
   const x=(lang!=='he'&&r.tr&&r.tr[lang])||r,
@@ -162,9 +162,9 @@ function card(r,u,ex){
         await save();
         STATUS=t('okDel');
         go();
-      }),'danger'],[t('cancel'],null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
+      }),'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
     )
-  );
+
 }
 const grid=(rs,u,ex)=>h('ul',{class:'grid'},...rs.map(r=>card(r,u,ex&&ex(r))));
 async function procImg(f){if(f.size>3e6)throw t('eImgS');const b=new Uint8Array(await f.slice(0,12).arrayBuffer());
@@ -299,7 +299,7 @@ acc(u){
         out();
         STATUS=t('okAcc');
         nav('recipes');
-      }),'danger'],[t('cancel'],null,'alt']])},t('delAcc'))
+      }),'danger'],[t('cancel'),null,'alt']])},t('delAcc'))
     )
   );
 }
