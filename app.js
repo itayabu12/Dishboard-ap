@@ -203,99 +203,108 @@ stage.append(el,sy,sn)}
 draw();return h('section',{},h('h1',{},t('discover')),h('p',{class:'lede'},t('swipeH')),stage,ctl,info,live)},
 saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:()=>{u.cols[n]=u.cols[n].filter(i=>!ids.includes(i));if(!u.cols[n].length)delete u.cols[n];save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
 home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h1',{},t('hi')+u.name),h('section',{'aria-labelledby':'mp'},h('h2',{id:'mp'},t('mypage')),h('p',{class:'meta'},mine.length+' '+t('recipes')+' · '+Object.values(u.cols).flat().length+' '+t('saved'))),h('h2',{},t('myRec')),mine.length?grid(mine,u):h('p',{class:'meta'},t('noMine')))},
-add(u){
-  const cats=h('fieldset',{},h('legend',{},t('cats')),h('div',{style:'display:flex;flex-wrap:wrap'},...CATS.map(c=>h('label',{class:'cb'},h('input',{type:'checkbox',value:c}),t(c)))));
- 
-  // פונקציית סריקה חכמה אמיתית באמצעות OCR (Tesseract.js)
-  const scanInput=h('input',{type:'file',accept:'image/*',style:'display:none',onchange:async e=>{
-    const file=e.target.files[0];
-    if(!file)return;
+add(u) {
+    const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
     
-    const btn = document.getElementById('scan-btn');
-    const origText = btn.textContent;
-    btn.textContent = lang==='he' ? 'מפענח טקסט (זה עשוי לקחת כמה שניות)...' : 'Scanning...';
-    btn.disabled = true;
-    
-    try {
-      const { data: { text } } = await Tesseract.recognize(file, 'heb+eng');
+    const onScan = async e => {
+      const file = e.target.files[0]; if (!file) return;
       
-      if(text && text.trim().length > 0) {
-        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      const st = f.querySelector('#scs');
+      const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
+      
+      st.textContent = t('scanning'); 
+      e.target.disabled = true;
+      
+      try {
+        let rc = await scanRecipe(file);
+        if (!rc) { st.textContent = t('scanNo'); return }
         
-        // עדכון ישיר של השדות הקיימים ב-DOM מבלי לרנדר מחדש את העמוד
-        document.getElementById('t').value = lines[0] || (lang==='he' ? 'מתכון סרוק' : 'Scanned Recipe');
-        document.getElementById('i').value = lines.slice(1, 12).join('\n') || '';
-        document.getElementById('d').value = lines.slice(12).join('\n') || text;
-        document.getElementById('p').value = '15';
-        document.getElementById('c').value = '30';
+        // טיפול חכם למקרה שה-AI מחזיר טקסט גולמי, Markdown או JSON שבור
+        if (typeof rc === 'string') {
+          try {
+            const match = rc.match(/\{[\s\S]*\}/);
+            if (match) rc = JSON.parse(match[0]);
+          } catch(e) {}
+          
+          if (typeof rc === 'string') {
+            const lines = rc.split('\n').map(l => l.trim()).filter(Boolean);
+            rc = { 
+              title: lines[0], 
+              ingredients: lines.slice(1, 10), 
+              method: lines.slice(10).join('\n') 
+            };
+          }
+        }
+
+        set('t', rc.title || rc.name || (lang === 'he' ? 'מתכון סרוק' : 'Scanned Recipe'));
+        set('i', Array.isArray(rc.ingredients) ? rc.ingredients.join('\n') : (rc.ingredients || (lang === 'he' ? 'מצרכים חסרים' : 'Missing ingredients')));
+        set('d', rc.method || rc.instructions || rc.desc || (lang === 'he' ? 'אופן הכנה' : 'Method'));
+        set('p', rc.prep || 15);
+        set('c', rc.cook || 30);
         
-        alert(lang==='he' ? 'המתכון פוענח בהצלחה! מומלץ לעבור על הטקסט ולתקן לפני הפרסום.' : 'Recipe extracted successfully!');
-      } else {
-        throw new Error('No text found');
+        if (rc.difficulty && ['easy', 'med', 'hard'].includes(rc.difficulty)) set('df', rc.difficulty);
+        if (rc.categories && Array.isArray(rc.categories)) {
+          cats.querySelectorAll('input').forEach(x => x.checked = rc.categories.includes(x.value));
+        }
+        
+        st.textContent = t('scanOk');
+      } catch (x) { 
+        st.textContent = (x && x.message) || t('scanErr');
+      } finally { 
+        e.target.disabled = false; 
+        e.target.value = ''; 
       }
-    } catch (err) {
-      console.error('שגיאה בסריקת OCR:', err);
-      alert(lang==='he' ? 'לא הצלחנו לזהות טקסט ברור בתמונה. נסו שוב או הזנו ידנית.' : 'Could not read text from image.');
-    }
-    
-    btn.textContent = origText;
-    btn.disabled = false;
-    e.target.value = ''; // איפוס כדי שיהיה אפשר להעלות את אותה תמונה שוב במידת הצורך
-  }});
-
-  const scanBtn=h('button',{id:'scan-btn',type:'button',class:'btn alt',onclick:()=>scanInput.click()},t('scanRecipe'));
-  
-  const f=h('form',{novalidate:true,'aria-labelledby':'sh',onsubmit:async e=>{
-    e.preventDefault();
-    const q=i=>f.querySelector('#'+i),errs=[],T=clean(q('t').value,80),d=clean(q('d').value,1500),ing=q('i').value.split('\n').map(x=>clean(x,120)).filter(Boolean).slice(0,40),pr=+q('p').value,ck=+q('c').value,file=q('im').files[0],alt=clean(q('a').value,150),vr=q('v').value.trim();
-    if(T.length<3)errs.push({id:'t',msg:t('eTitle')});if(!ing.length)errs.push({id:'i',msg:t('eIng')});if(d.length<10)errs.push({id:'d',msg:t('eMeth')});
-    if(q('p').value===''||!(pr>=0&&pr<=600))errs.push({id:'p',msg:t('eTime')});if(q('c').value===''||!(ck>=0&&ck<=600))errs.push({id:'c',msg:t('eTime')});
-    if(vr&&!vurl(vr))errs.push({id:'v',msg:t('eVid')});if(file&&alt.length<5)errs.push({id:'a',msg:t('eAlt')});
-    let img='';if(file&&!errs.length){try{img=await procImg(file)}catch(x){errs.push({id:'im',msg:String(x)})}}
-    showErrs(f,errs);if(errs.length)return;
-
-    const newRecipe = {
-      id: crypto.randomUUID(),
-      uid: u.id,
-      by: u.name,
-      title: T,
-      desc: d,
-      ing,
-      prep: pr,
-      cook: ck,
-      diff: q('df').value,
-      cats: [...cats.querySelectorAll('input:checked')].map(x => x.value),
-      img,
-      alt: img ? alt : '',
-      vid: vr ? vurl(vr) : ''
     };
 
-    const { error: insErr } = await supabaseClient.from('recipes').insert([newRecipe]);
-    if (insErr) {
-      console.error('שגיאה בשמירת המתכון בענן:', insErr.message);
-    }
-
-    db.recipes.unshift(newRecipe);
-    STATUS = t('okPub');
-    nav('home');
-  }},
-  sum(),
-  h('div',{class:'row',style:'margin-bottom:1rem;'},scanBtn,scanInput),
-  fld(t('title'),'t',h('input',{id:'t',maxlength:'80','aria-required':'true'})),
-  fld(t('ingF'),'i',h('textarea',{id:'i',rows:'5','aria-required':'true'})),
-  fld(t('method'),'d',h('textarea',{id:'d',rows:'5',maxlength:'1500','aria-required':'true'})),
-  fld(t('prep'),'p',h('input',{id:'p',type:'number',min:'0',max:'600',inputmode:'numeric','aria-required':'true'})),
-  fld(t('cook'),'c',h('input',{id:'c',type:'number',min:'0',max:'600',inputmode:'numeric','aria-required':'true'})),
-  fld(t('diff'),'df',h('select',{id:'df'},...['easy','med','hard'].map(x=>h('option',{value:x},t(x))))),
-  cats,
-  fld(t('img'),'im',h('input',{id:'im',type:'file',accept:'image/jpeg,image/png,image/webp'}),t('imgH')),
-  fld(t('alt'),'a',h('input',{id:'a',maxlength:'150'}),t('altH')),
-  fld(t('vid'),'v',h('input',{id:'v',type:'url',inputmode:'url',dir:'ltr',autocomplete:'off'}),t('vidH')),
-  h('div',{class:'row'},h('button',{class:'btn',type:'submit'},t('publish')))
-  );
-  return h('section',{},h('h1',{id:'sh'},t('add')),f);
-},
-acc(u){
+    const f = h('form', {
+      novalidate: true, 'aria-labelledby': 'sh', onsubmit: async e => {
+        e.preventDefault();
+        const btn = f.querySelector('button[type=submit]'); if (btn.disabled) return;
+        const q = i => f.querySelector('#' + i), errs = [], T = clean(q('t').value, 80), d = clean(q('d').value, 1500), ing = q('i').value.split('\n').map(x => clean(x, 120)).filter(Boolean).slice(0, 40),
+          pr = +q('p').value, ck = +q('c').value, file = q('im').files[0], alt = clean(q('a').value, 150), vr = q('v').value.trim();
+        if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') }); if (!ing.length) errs.push({ id: 'i', msg: t('eIng') }); if (d.length < 10) errs.push({ id: 'd', msg: t('eMeth') });
+        if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') }); if (q('c').value === '' || !(ck >= 0 && ck <= 600)) errs.push({ id: 'c', msg: t('eTime') });
+        if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') }); if (file && alt.length < 5) errs.push({ id: 'a', msg: t('eAlt') });
+        showErrs(f, errs); if (errs.length) return;
+        btn.disabled = true;
+        let img = '', path = '';
+        try {
+          if (file) {
+            const blob = await prep(file, 1000, .82);
+            path = u.id + '/' + crypto.randomUUID() + '.jpg';
+            const up = await SB.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg' });
+            if (up.error) throw new Error(t('eSave'));
+            img = SB.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+          }
+          const row = { id: crypto.randomUUID(), uid: u.id, by: u.name, title: T, desc: d, ing, prep: pr, cook: ck, diff: q('df').value, cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), img, alt: img ? alt : '', vid: vr ? vurl(vr) : '' };
+          const { data, error } = await SB.from('recipes').insert(row).select().single();
+          if (error) { console.error('Saving the recipe failed:', error); throw new Error(t('eSave')) }
+          db.recipes.unshift(norm(data)); STATUS = t('okPub'); nav('home');
+        } catch (x) {
+          if (path) SB.storage.from(BUCKET).remove([path]);
+          btn.disabled = false;
+          showErrs(f, [{ id: file ? 'im' : 't', msg: (x && x.message) || String(x) }]);
+        }
+      }
+    },
+      sum(),
+      fld(t('scanB'), 'sc', h('input', { id: 'sc', type: 'file', accept: 'image/*', onchange: onScan }), t('scanH')),
+      h('p', { id: 'scs', class: 'meta', role: 'status' }),
+      fld(t('title'), 't', h('input', { id: 't', maxlength: '80', 'aria-required': 'true' })),
+      fld(t('ingF'), 'i', h('textarea', { id: 'i', rows: '5', 'aria-required': 'true' })),
+      fld(t('method'), 'd', h('textarea', { id: 'd', rows: '5', maxlength: '1500', 'aria-required': 'true' })),
+      fld(t('prep'), 'p', h('input', { id: 'p', type: 'number', min: '0', max: '600', inputmode: 'numeric', 'aria-required': 'true' })),
+      fld(t('cook'), 'c', h('input', { id: 'c', type: 'number', min: '0', max: '600', inputmode: 'numeric', 'aria-required': 'true' })),
+      fld(t('diff'), 'df', h('select', { id: 'df' }, ...['easy', 'med', 'hard'].map(x => h('option', { value: x }, t(x))))),
+      cats,
+      fld(t('img'), 'im', h('input', { id: 'im', type: 'file', accept: 'image/jpeg,image/png,image/webp' }), t('imgH')),
+      fld(t('alt'), 'a', h('input', { id: 'a', maxlength: '150' }), t('altH')),
+      fld(t('vid'), 'v', h('input', { id: 'v', type: 'url', inputmode: 'url', dir: 'ltr', autocomplete: 'off' }), t('vidH')),
+      h('div', { class: 'row' }, h('button', { class: 'btn', type: 'submit' }, t('publish')))
+    );
+    return h('section', {}, h('h1', { id: 'sh' }, t('add')), f);
+  },
+  acc(u){
   const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};
   return h('section',{},
     h('h1',{},t('acc')),
