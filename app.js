@@ -212,11 +212,11 @@ add(u) {
       const st = f.querySelector('#scs');
       const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
       
-      st.textContent = lang === 'he' ? 'סורק טקסט בעברית (זה ייקח כמה שניות)...' : 'Scanning...'; 
+      st.textContent = lang === 'he' ? 'סורק טקסט בעברית (זה ייקח קצת זמן)...' : 'Scanning...'; 
       e.target.disabled = true;
       
       try {
-        // השינוי הקריטי: הגדרנו 'heb' בלבד! בלי אנגלית, כדי שלא ימציא אותיות.
+        // קורא עברית בלבד כדי למנוע ג'יבריש
         const { data: { text } } = await Tesseract.recognize(file, 'heb', {
           logger: m => console.log(m)
         });
@@ -225,21 +225,22 @@ add(u) {
           throw new Error('לא זוהה טקסט בתמונה');
         }
         
-        // פירוק הטקסט לשורות וניקוי שורות ריקות
-        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-        const mid = Math.floor(lines.length / 2);
+        // מנקים שורות ריקות
+        const cleanText = text.split('\n').map(l => l.trim()).filter(Boolean).join('\n');
         
-        // כפייה של הערכים לתוך השדות כדי שהפרסום יעבור
-        set('t', lines[0] || (lang === 'he' ? 'מתכון סרוק' : 'Scanned Recipe'));
-        set('i', lines.slice(1, mid).join('\n') || (lang === 'he' ? 'מצרכים חסרים' : 'Ingredients'));
-        set('d', lines.slice(mid).join('\n') || text);
-        set('p', '15'); // מזינים זמן כדי שלא תהיה שגיאה אדומה
+        // מכניסים את כל הטקסט לאופן ההכנה כדי למנוע בלאגן בעמודות
+        set('t', lang === 'he' ? 'מתכון סרוק' : 'Scanned Recipe');
+        set('i', lang === 'he' ? 'אנא גזרו והדביקו לכאן את המצרכים מתיבת אופן ההכנה למטה' : 'Paste ingredients here');
+        set('d', cleanText);
+        
+        // מזינים זמנים אוטומטית כדי לא לחסום את הפרסום
+        set('p', '15');
         set('c', '45');
         
-        st.textContent = lang === 'he' ? 'המתכון פוענח! כדאי לעבור עליו ולתקן מעט לפני הפרסום.' : 'Recipe extracted!';
+        st.textContent = lang === 'he' ? 'הסריקה הושלמה! כל הטקסט הוכנס לתיבת "אופן הכנה". אנא סדרו אותו בשדות המתאימים.' : 'Scan complete. Please arrange the text.';
       } catch (x) { 
         console.error('OCR Error:', x);
-        st.textContent = (x && x.message) || t('scanErr') || 'הסריקה נכשלה';
+        st.textContent = lang === 'he' ? 'הסריקה נכשלה. נסו תמונה ברורה יותר.' : 'Scan failed.';
       } finally { 
         e.target.disabled = false; 
         e.target.value = ''; 
@@ -294,6 +295,12 @@ add(u) {
     );
     return h('section', {}, h('h1', { id: 'sh' }, t('add')), f);
   },
+
+
+
+
+
+  
   acc(u){
   const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};
   return h('section',{},
