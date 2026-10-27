@@ -333,7 +333,6 @@ home(u) {
   
   
   
-  
   add(u) {
     const draft = window.fmDraft || null;
     window.fmDraft = null; 
@@ -393,9 +392,17 @@ home(u) {
           const btn = f.querySelector('button[type=submit]'); if (btn.disabled) return;
           const q = i => f.querySelector('#' + i), errs = [], T = clean(q('t').value, 80), d = clean(q('d').value, 1500), ing = q('i').value.split('\n').map(x => clean(x, 120)).filter(Boolean).slice(0, 40),
             pr = +q('p').value, ck = +q('c').value, file = q('im').files[0], alt = clean(q('a').value, 150), vr = q('v').value.trim();
-          if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') }); if (!ing.length) errs.push({ id: 'i', msg: t('eIng') }); if (d.length < 10) errs.push({ id: 'd', msg: t('eMeth') });
-          if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') }); if (q('c').value === '' || !(ck >= 0 && ck <= 600)) errs.push({ id: 'c', msg: t('eTime') });
-          if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') }); if (file && alt.length < 5) errs.push({ id: 'a', msg: t('eAlt') });
+          
+          if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') }); 
+          if (!ing.length) errs.push({ id: 'i', msg: t('eIng') }); 
+          if (d.length < 10) errs.push({ id: 'd', msg: t('eMeth') });
+          if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') }); 
+          if (q('c').value === '' || !(ck >= 0 && ck <= 600)) errs.push({ id: 'c', msg: t('eTime') });
+          if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') }); 
+          
+          // בדיקה שחובה לכתוב טקסט חלופי אם מעלים תמונה
+          if (file && alt.length < 5) errs.push({ id: 'a', msg: t('eAlt') });
+
           showErrs(f, errs); if (errs.length) return;
           btn.disabled = true;
           let img = '', path = '';
@@ -403,10 +410,10 @@ home(u) {
           try {
             const sc = typeof supabaseClient !== 'undefined' ? supabaseClient : SB;
             if (file) {
-              if (file.size > 5e6) throw new Error(t('eImgS'));
+              if (file.size > 5e6) throw new Error('התמונה חייבת להיות קטנה מ-5MB');
               path = u.id + '/' + crypto.randomUUID() + '.jpg';
               const up = await sc.storage.from(BUCKET).upload(path, file, { contentType: file.type || 'image/jpeg' });
-              if (up.error) throw new Error(t('eSave'));
+              if (up.error) throw new Error('שגיאה בהעלאת התמונה לשרת');
               img = sc.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
             }
             
@@ -417,12 +424,12 @@ home(u) {
             if (sc) {
               if (isEdit) {
                 const { error } = await sc.from('recipes').update(row).eq('id', newId);
-                if (error) throw new Error(t('eSave'));
+                if (error) throw new Error('שגיאה בעדכון המתכון');
                 const idx = db.recipes.findIndex(x => x.id === newId);
                 if (idx !== -1) db.recipes[idx] = row;
               } else {
                 const { data, error } = await sc.from('recipes').insert(row).select().single();
-                if (error) throw new Error(t('eSave'));
+                if (error) throw new Error('שגיאה בשמירת המתכון');
                 db.recipes.unshift(data || row);
               }
             }
@@ -430,7 +437,7 @@ home(u) {
           } catch (x) {
             if (path && typeof supabaseClient !== 'undefined') supabaseClient.storage.from(BUCKET).remove([path]);
             btn.disabled = false; 
-            showErrs(f, [{ id: file ? 'im' : 't', msg: (x && x.message) || t('eSave') }]);
+            showErrs(f, [{ id: file ? 'im' : 't', msg: (x && x.message) || 'שגיאה לא ידועה בשמירה' }]);
           }
         }
       },
@@ -474,7 +481,6 @@ home(u) {
     if (draft) renderForm(); else renderChoice();
     return wrap;
   },
-
 
 
 acc(u){
