@@ -54,6 +54,15 @@ eVid:['הקישור חייב להיות כתובת https מאינסטגרם או
 eDup:['לא ניתן ליצור חשבון עם הפרטים האלה. נסו להתחבר.','We couldn’t create an account with those details. Try logging in.'],eBad:['האימייל או הסיסמה שגויים.','Email or password is incorrect.'],eLock:['יותר מדי ניסיונות. המתינו 30 שניות.','Too many attempts. Wait 30 seconds.'],
 okPub:['המתכון פורסם.','Your recipe is published.'],okDel:['המתכון נמחק.','Recipe deleted.'],okOut:['התנתקתם.','You’re logged out.'],okAcc:['החשבון והנתונים נמחקו.','Your account and data have been deleted.'],okIn:['ברוכים הבאים!','Welcome!'],settings:['הגדרות','Settings'],langL:['שפה','Language'],heroT:['מה מבשלים היום?','What’s cooking today?'],heroS:['מתכונים פשוטים, טעימים וחסכוניים מקהילת הסטודנטים.','Simple, tasty, budget-friendly recipes from the student community.']};
 Object.assign(D,{discover:['גלו','Discover'],saved:['אוסף','Collection'],save:['שמירה','Save'],skipB:['דילוג','Skip'],swipeH:['החליקו ימינה כדי לשמור ושמאלה כדי לדלג. אפשר גם להשתמש בחצים במקלדת או בכפתורים.','Swipe right to save, left to skip. You can also use the arrow keys or the buttons.'],pickT:['לאן לשלוח את המתכון?','Where should this go?'],pickN:['או שם לתיקייה חדשה','Or name a new folder'],addF:['יצירה ושמירה','Create and save'],savedTo:['נשמר ב־{n}.','Saved to {n}.'],skipped:['דולג.','Skipped.'],left:['נותרו {n} מתכונים לדפדוף','{n} recipes left to browse'],deckEnd:['ראיתם את כל המתכונים לעכשיו.','You’ve seen all the recipes for now.'],again:['להתחיל מחדש','Start over'],emptyCol:['עוד אין כאן כלום. החליקו ימינה במסך הגלו כדי לשמור מתכונים.','Nothing here yet. Swipe right on Discover to save recipes.'],rm:['הסרה','Remove'],scanRecipe:['סריקת מתכון מתמונה או מחברת (AI)','Scan recipe from image (AI)']});
+
+// === את זה אתה מדביק פה מתחת ===
+Object.assign(D, {
+  searchMine: ['חיפוש במתכונים שלי...', 'Search my recipes...'],
+  edit: ['עריכה', 'Edit'],
+  dup: ['שכפול (העתקה)', 'Duplicate'],
+  updateBtn: ['עדכון מתכון', 'Update recipe']
+});
+
 const STILL=`<svg viewBox='0 0 200 133' preserveAspectRatio='xMidYMid slice' role='presentation'><g fill='none' stroke='#8a7a5a' stroke-width='2' stroke-linecap='round' opacity='.55'><path d='M85 40c-6-8 6-12 0-22'/><path d='M100 38c-6-8 6-12 0-24'/><path d='M115 40c-6-8 6-12 0-22'/></g><path d='M50 68h100c0 26-20 44-50 44S50 94 50 68z' fill='#a8643a'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='#e6b95c'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='none' stroke='#8a4f2b' stroke-width='2'/><circle cx='86' cy='66' r='4' fill='#c8452f'/><circle cx='108' cy='69' r='3.5' fill='#6d9a4e'/><circle cx='122' cy='66' r='3' fill='#c8452f'/><path d='M60 120h80' stroke='#8a4f2b' stroke-width='3' stroke-linecap='round'/><g transform='translate(30 100)'><circle r='11' fill='#c8452f'/><path d='M-4-10c2-4 6-4 8 0' stroke='#4f7a3a' stroke-width='2.5' fill='none'/></g><ellipse cx='168' cy='104' rx='13' ry='10' fill='#ecc84a' transform='rotate(-20 168 104)'/><g fill='#5f8a4a'><ellipse cx='160' cy='70' rx='10' ry='4' transform='rotate(-35 160 70)'/><ellipse cx='172' cy='60' rx='10' ry='4' transform='rotate(-70 172 60)'/><ellipse cx='150' cy='58' rx='9' ry='3.5' transform='rotate(-5 150 58)'/></g><path d='M165 72c-3 8-4 14-4 22' stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'/></svg>`;
 const HERO=`<svg viewBox='0 0 600 150' role='presentation'><rect y='128' width='600' height='22' fill='#d8b98a'/><rect y='128' width='600' height='3' fill='#b8935f'/><g fill='none' stroke='#9a8d70' stroke-width='3' stroke-linecap='round' opacity='.55'><path d='M70 58c-8-10 8-14 0-26'/><path d='M92 56c-8-10 8-14 0-28'/><path d='M114 58c-8-10 8-14 0-26'/></g><path d='M38 72h104v44a12 12 0 0 1-12 12H50a12 12 0 0 1-12-12z' fill='#5f7a52'/><rect x='32' y='66' width='116' height='9' rx='4' fill='#4a6240'/><circle cx='28' cy='84' r='5' fill='#4a6240'/><circle cx='152' cy='84' r='5' fill='#4a6240'/><path d='M170 128L206 46' stroke='#a4703c' stroke-width='7' stroke-linecap='round'/><ellipse cx='210' cy='38' rx='11' ry='15' fill='#b9824a' transform='rotate(18 210 38)'/><circle cx='258' cy='108' r='19' fill='#c8452f'/><circle cx='294' cy='114' r='15' fill='#d4533a'/><circle cx='273' cy='88' r='14' fill='#c8452f'/><g stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'><path d='M251 91c4-4 9-4 14 0M288 101c3-3 7-3 11 0M267 76c3-3 7-3 11 0'/></g><path d='M350 86c14 8 22 22 22 36 0 6-10 8-22 8s-22-2-22-8c0-14 8-28 22-36z' fill='#f4ecd6' stroke='#cdbf99' stroke-width='2'/><path d='M350 86v-8' stroke='#cdbf99' stroke-width='3' stroke-linecap='round'/><ellipse cx='418' cy='114' rx='26' ry='17' fill='#ecc84a' transform='rotate(-12 418 114)'/><ellipse cx='410' cy='108' rx='9' ry='4' fill='#f6e08a' transform='rotate(-12 410 108)'/><g fill='#5f8a4a'><ellipse cx='488' cy='96' rx='13' ry='6' transform='rotate(-40 488 96)'/><ellipse cx='506' cy='82' rx='13' ry='6' transform='rotate(-75 506 82)'/><ellipse cx='474' cy='80' rx='12' ry='5.5' transform='rotate(-10 474 80)'/></g><path d='M480 128c4-14 8-24 12-34' stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'/><circle cx='556' cy='108' r='20' fill='#c58a4a'/><path d='M556 88c-8 10-8 30 0 40M556 88c8 10 8 30 0 40' stroke='#a56f35' stroke-width='2' fill='none'/><path d='M556 88v-8' stroke='#a56f35' stroke-width='3' stroke-linecap='round'/></svg>`;
 const PAT=`<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180' fill='none' stroke='#355a3a' stroke-opacity='.12' stroke-width='1.6' stroke-linecap='round'><path d='M20 40c8-14 22-18 30-14-4 12-16 20-30 14zM20 40l-8 10'/><path d='M120 30c6 10 4 22-4 28M120 30c-8 6-10 18-4 28'/><circle cx='140' cy='120' r='12'/><path d='M140 108v24M128 120h24'/><path d='M40 130c6 10 4 20 0 28M40 130c-6 10-4 20 0 28'/><path d='M80 90q10-16 20 0'/></svg>`;
@@ -225,93 +234,181 @@ el.addEventListener('pointercancel',reset);
 stage.append(el,sy,sn)}
 draw();return h('section',{},h('h1',{},t('discover')),h('p',{class:'lede'},t('swipeH')),stage,ctl,info,live)},
 saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:()=>{u.cols[n]=u.cols[n].filter(i=>!ids.includes(i));if(!u.cols[n].length)delete u.cols[n];save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
-home(u){const mine=db.recipes.filter(r=>r.uid===u.id);return h('section',{},h('h1',{},t('hi')+u.name),h('section',{'aria-labelledby':'mp'},h('h2',{id:'mp'},t('mypage')),h('p',{class:'meta'},mine.length+' '+t('recipes')+' · '+Object.values(u.cols).flat().length+' '+t('saved'))),h('h2',{},t('myRec')),mine.length?grid(mine,u):h('p',{class:'meta'},t('noMine')))},
-add(u) {
+home(u) {
+    let q = '';
+    const mine = db.recipes.filter(r => r.uid === u.id);
+    const list = h('div');
+    const draw = () => {
+      const filtered = q ? mine.filter(r => ((r.title || '') + ' ' + (r.ing || []).join(' ')).toLowerCase().includes(q)) : mine;
+      list.replaceChildren(filtered.length ? grid(filtered, u) : h('p', { class: 'meta' }, t('noMine')));
+    };
+    const sb = h('div', { style: 'margin-bottom: 1.5rem;' },
+      h('input', { type: 'search', placeholder: t('searchMine'), oninput: e => { q = e.target.value.trim().toLowerCase(); draw(); } })
+    );
+    draw();
+    return h('section', {},
+      h('h1', {}, t('hi') + u.name),
+      h('section', { 'aria-labelledby': 'mp' }, h('h2', { id: 'mp' }, t('mypage')), h('p', { class: 'meta' }, mine.length + ' ' + t('recipes') + ' · ' + Object.values(u.cols).flat().length + ' ' + t('saved'))),
+      h('h2', {}, t('myRec')),
+      sb,
+      list
+    );
+  },
+  
+  
+  
+  
+  add(u) {
+    const draft = window.fmDraft || null;
+    window.fmDraft = null; // מנקה את הזיכרון
+    const isEdit = draft && draft._mode === 'edit';
+
     const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
-    
-    // סריקה מקומית ישירה לשדות
+    const wrap = h('section', {}, h('h1', { id: 'sh' }, isEdit ? t('edit') : t('add')));
+    const scanInput = h('input', { type: 'file', accept: 'image/*', style: 'display:none' });
+
     const onScan = async e => {
       const file = e.target.files[0]; if (!file) return;
-      const st = f.querySelector('#scs');
-      const set = (id, v) => { const el = f.querySelector('#' + id); if (el && v != null) el.value = v };
+      renderForm(true);
+      const st = wrap.querySelector('#scs');
+      const set = (id, v) => { const el = wrap.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
       
-      if (st) st.textContent = 'סורק טקסט בעברית...'; 
-      e.target.disabled = true;
+      if (st) st.textContent = lang === 'he' ? 'סורק ומנתח טקסט (זה עשוי לקחת קצת זמן)...' : 'Scanning...';
       
       try {
+        if (typeof Tesseract === 'undefined') throw new Error('Tesseract not loaded');
         const { data: { text } } = await Tesseract.recognize(file, 'heb');
         if (!text || text.trim() === '') throw new Error('לא זוהה טקסט');
         
         const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-        const mid = Math.floor(lines.length / 2);
+        let title = lines[0] || 'מתכון סרוק';
+        let ing = [], meth = [], mode = 'meth';
         
-        set('t', lines[0] || 'מתכון סרוק');
-        set('i', lines.slice(1, mid).join('\n'));
-        set('d', lines.slice(mid).join('\n') || text);
-        set('p', '15');
-        set('c', '45');
-        
-        if (st) st.textContent = 'הסריקה הושלמה בהצלחה!';
+        lines.forEach(l => {
+          if (l.includes('רכיבים') || l.includes('מצרכים')) mode = 'ing';
+          else if (l.includes('הכנה') || l.includes('אופן')) mode = 'meth';
+          else if (mode === 'ing') ing.push(l);
+          else meth.push(l);
+        });
+        if (ing.length === 0 && meth.length > 4) { ing = meth.slice(0, 4); meth = meth.slice(4); }
+
+        set('t', title); set('i', ing.join('\n')); set('d', meth.join('\n') || text); set('p', '15'); set('c', '45');
+        if (st) st.textContent = lang === 'he' ? 'הסריקה הושלמה! (שימו לב: תמונות עם עמודות מצריכות סידור ידני קל)' : 'Scan complete.';
       } catch (err) {
-        console.error(err);
-        if (st) st.textContent = 'הסריקה נכשלה.';
+        if (st) st.textContent = lang === 'he' ? 'הסריקה נכשלה. נסו להזין ידנית.' : 'Scan failed.';
       } finally {
-        e.target.disabled = false;
+        const btn = wrap.querySelector('#sbtn'); if(btn) btn.disabled = false;
         e.target.value = '';
       }
     };
+    scanInput.onchange = onScan;
 
-    const scanInput = h('input', { type: 'file', accept: 'image/*', style: 'display:none', onchange: onScan });
-    const scanBtn = h('button', { type: 'button', class: 'btn alt', style: 'margin-bottom: 1rem;', onclick: () => scanInput.click() }, '📸 סריקת מתכון מתמונה');
+    const renderChoice = () => {
+      const choiceBox = h('div', { class: 'choice-box', style: 'text-align:center; padding: 3rem 0;' },
+        h('h2', { style: 'margin-bottom: 2rem;' }, lang === 'he' ? 'איך תרצו להוסיף את המתכון?' : 'How would you like to add?'),
+        h('div', { class: 'row', style: 'justify-content: center; gap: 1rem;' },
+          h('button', { type: 'button', class: 'btn alt', onclick: () => renderForm() }, lang === 'he' ? '✏️ הזנה ידנית' : 'Manual Entry'),
+          h('button', { type: 'button', class: 'btn yes', onclick: () => scanInput.click() }, lang === 'he' ? '📸 סריקה מתמונה' : 'Scan Image')
+        ), scanInput
+      );
+      wrap.replaceChildren(h('h1', { id: 'sh' }, t('add')), choiceBox);
+    };
 
-    const f = h('form', {
-      novalidate: true, 'aria-labelledby': 'sh', onsubmit: async e => {
-        e.preventDefault();
-        const btn = f.querySelector('button[type=submit]'); if (btn.disabled) return;
-        const q = i => f.querySelector('#' + i), errs = [], T = clean(q('t').value, 80), d = clean(q('d').value, 1500), ing = q('i').value.split('\n').map(x => clean(x, 120)).filter(Boolean).slice(0, 40),
-          pr = +q('p').value, ck = +q('c').value, file = q('im').files[0], alt = clean(q('a').value, 150), vr = q('v').value.trim();
-        if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') }); if (!ing.length) errs.push({ id: 'i', msg: t('eIng') }); if (d.length < 10) errs.push({ id: 'd', msg: t('eMeth') });
-        if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') }); if (q('c').value === '' || !(ck >= 0 && ck <= 600)) errs.push({ id: 'c', msg: t('eTime') });
-        if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') }); if (file && alt.length < 5) errs.push({ id: 'a', msg: t('eAlt') });
-        showErrs(f, errs); if (errs.length) return;
-        btn.disabled = true;
-        let img = '', path = '';
-        try {
-          if (file) {
-            const blob = await prep(file, 1000, .82);
-            path = u.id + '/' + crypto.randomUUID() + '.jpg';
-            const up = await SB.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg' });
-            if (up.error) throw new Error(t('eSave'));
-            img = SB.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    const renderForm = (isLoading = false) => {
+      const f = h('form', {
+        novalidate: true, onsubmit: async e => {
+          e.preventDefault();
+          const btn = f.querySelector('button[type=submit]'); if (btn.disabled) return;
+          const q = i => f.querySelector('#' + i), errs = [], T = clean(q('t').value, 80), d = clean(q('d').value, 1500), ing = q('i').value.split('\n').map(x => clean(x, 120)).filter(Boolean).slice(0, 40),
+            pr = +q('p').value, ck = +q('c').value, file = q('im').files[0], alt = clean(q('a').value, 150), vr = q('v').value.trim();
+          if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') }); if (!ing.length) errs.push({ id: 'i', msg: t('eIng') }); if (d.length < 10) errs.push({ id: 'd', msg: t('eMeth') });
+          if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') }); if (q('c').value === '' || !(ck >= 0 && ck <= 600)) errs.push({ id: 'c', msg: t('eTime') });
+          if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') }); if (file && alt.length < 5) errs.push({ id: 'a', msg: t('eAlt') });
+          showErrs(f, errs); if (errs.length) return;
+          btn.disabled = true;
+          let img = '', path = '';
+          
+          try {
+            const sc = typeof supabaseClient !== 'undefined' ? supabaseClient : SB;
+            if (file) {
+              const blob = await prep(file, 1000, .82);
+              path = u.id + '/' + crypto.randomUUID() + '.jpg';
+              const up = await sc.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg' });
+              if (up.error) throw new Error(t('eSave'));
+              img = sc.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+            }
+            
+            const newId = isEdit ? draft.id : crypto.randomUUID();
+            const finalImg = img || (draft ? draft.img : '');
+            const row = { id: newId, uid: u.id, by: u.name, title: T, desc: d, ing, prep: pr, cook: ck, diff: q('df').value, cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), img: finalImg, alt: finalImg ? alt : '', vid: vr ? vurl(vr) : '' };
+            
+            if (sc) {
+              if (isEdit) {
+                const { error } = await sc.from('recipes').update(row).eq('id', newId);
+                if (error) throw new Error(t('eSave'));
+                const idx = db.recipes.findIndex(x => x.id === newId);
+                if (idx !== -1) db.recipes[idx] = row;
+              } else {
+                const { data, error } = await sc.from('recipes').insert(row).select().single();
+                if (error) throw new Error(t('eSave'));
+                db.recipes.unshift(data || row);
+              }
+            }
+            STATUS = t('okPub'); nav('home');
+          } catch (x) {
+            if (path && typeof supabaseClient !== 'undefined') supabaseClient.storage.from(BUCKET).remove([path]);
+            btn.disabled = false; showErrs(f, [{ id: file ? 'im' : 't', msg: (x && x.message) || String(x) }]);
           }
-          const row = { id: crypto.randomUUID(), uid: u.id, by: u.name, title: T, desc: d, ing, prep: pr, cook: ck, diff: q('df').value, cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), img, alt: img ? alt : '', vid: vr ? vurl(vr) : '' };
-          const { data, error } = await SB.from('recipes').insert(row).select().single();
-          if (error) throw new Error(t('eSave'));
-          db.recipes.unshift(norm(data)); STATUS = t('okPub'); nav('home');
-        } catch (x) {
-          if (path) SB.storage.from(BUCKET).remove([path]);
-          btn.disabled = false;
-          showErrs(f, [{ id: file ? 'im' : 't', msg: (x && x.message) || String(x) }]);
         }
+      },
+        sum(),
+        (!isEdit && !draft ? h('div', { style: 'display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;' }, 
+          h('button', { type: 'button', class: 'lnk', onclick: () => renderChoice() }, lang === 'he' ? '⟵ חזרה לבחירה' : '⟵ Back'),
+          h('button', { type: 'button', class: 'btn alt', onclick: () => scanInput.click() }, lang === 'he' ? '📸 סריקה נוספת' : 'Scan again')
+        ) : ''),
+        scanInput,
+        h('p', { id: 'scs', class: 'meta', role: 'status' }),
+        fld(t('title'), 't', h('input', { id: 't', maxlength: '80', 'aria-required': 'true' })),
+        fld(t('ingF'), 'i', h('textarea', { id: 'i', rows: '5', 'aria-required': 'true' })),
+        fld(t('method'), 'd', h('textarea', { id: 'd', rows: '5', maxlength: '1500', 'aria-required': 'true' })),
+        fld(t('prep'), 'p', h('input', { id: 'p', type: 'number', min: '0', max: '600', inputmode: 'numeric', 'aria-required': 'true' })),
+        fld(t('cook'), 'c', h('input', { id: 'c', type: 'number', min: '0', max: '600', inputmode: 'numeric', 'aria-required': 'true' })),
+        fld(t('diff'), 'df', h('select', { id: 'df' }, ...['easy', 'med', 'hard'].map(x => h('option', { value: x }, t(x))))),
+        cats,
+        fld(t('img'), 'im', h('input', { id: 'im', type: 'file', accept: 'image/jpeg,image/png,image/webp' }), t('imgH')),
+        fld(t('alt'), 'a', h('input', { id: 'a', maxlength: '150' }), t('altH')),
+        fld(t('vid'), 'v', h('input', { id: 'v', type: 'url', inputmode: 'url', dir: 'ltr', autocomplete: 'off' }), t('vidH')),
+        h('div', { class: 'row' }, h('button', { id: 'sbtn', class: 'btn', type: 'submit' }, isEdit ? t('updateBtn') : t('publish')))
+      );
+      
+      // אם הגענו מעריכה/שכפול, ממלא את השדות
+      if (draft) {
+        setTimeout(() => {
+          const q = i => f.querySelector('#' + i);
+          if(q('t')) q('t').value = draft.title + (draft._mode === 'dup' ? (lang === 'he' ? ' (עותק)' : ' (Copy)') : '');
+          if(q('i')) q('i').value = (draft.ing || []).join('\n');
+          if(q('d')) q('d').value = draft.desc || '';
+          if(q('p')) q('p').value = draft.prep || 15;
+          if(q('c')) q('c').value = draft.cook || 45;
+          if(q('df')) q('df').value = draft.diff || 'easy';
+          if(draft.cats) { cats.querySelectorAll('input').forEach(cb => { cb.checked = draft.cats.includes(cb.value); }); }
+        }, 0);
       }
-    },
-      sum(),
-      h('div', {}, scanBtn, scanInput),
-      h('p', { id: 'scs', class: 'meta', role: 'status' }),
-      fld(t('title'), 't', h('input', { id: 't', maxlength: '80', 'aria-required': 'true' })),
-      fld(t('ingF'), 'i', h('textarea', { id: 'i', rows: '5', 'aria-required': 'true' })),
-      fld(t('method'), 'd', h('textarea', { id: 'd', rows: '5', maxlength: '1500', 'aria-required': 'true' })),
-      fld(t('prep'), 'p', h('input', { id: 'p', type: 'number', min: '0', max: '600', inputmode: 'numeric', 'aria-required': 'true' })),
-      fld(t('cook'), 'c', h('input', { id: 'c', type: 'number', min: '0', max: '600', inputmode: 'numeric', 'aria-required': 'true' })),
-      fld(t('diff'), 'df', h('select', { id: 'df' }, ...['easy', 'med', 'hard'].map(x => h('option', { value: x }, t(x))))),
-      cats,
-      fld(t('img'), 'im', h('input', { id: 'im', type: 'file', accept: 'image/jpeg,image/png,image/webp' }), t('imgH')),
-      fld(t('alt'), 'a', h('input', { id: 'a', maxlength: '150' }), t('altH')),
-      fld(t('vid'), 'v', h('input', { id: 'v', type: 'url', inputmode: 'url', dir: 'ltr', autocomplete: 'off' }), t('vidH')),
-      h('div', { class: 'row' }, h('button', { class: 'btn', type: 'submit' }, t('publish')))
-    );
-    return h('section', {}, h('h1', { id: 'sh' }, t('add')), f);
+      
+      wrap.replaceChildren(h('h1', { id: 'sh' }, isEdit ? t('edit') : t('add')), f);
+      if (isLoading) { const btn = wrap.querySelector('#sbtn'); if(btn) btn.disabled = true; }
+    };
+
+    if (draft) renderForm(); else renderChoice();
+    return wrap;
   },
+
+
+
+
+
+
+  
 acc(u){
   const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};
   return h('section',{},
