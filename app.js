@@ -578,20 +578,26 @@ h('button',{class:'btn alt',type:'button',onclick:async ()=>{
 }},t('google')),f)}
 
 const TABS=[['recipes','recipes'],['discover','discover'],['home','home'],['add','plus'],['saved','saved']];
-function go(){const u=me();if(!V[route])route='recipes';
-let v;if(['discover','saved','home','add'].includes(route)&&!u){if(!STATUS)STATUS=t('need');v=auth()}else v=V[route](u);
-$('#tabs').replaceChildren(...TABS.map(([r,i],k)=>h('button',{type:'button',class:k===2?'mid':'','aria-current':r===route?'page':false,onclick:()=>nav(r)},h('span',{class:'ic'},ic(i)),h('span',{},t(r)))));
-const lg = h('p', { class: 'legal', style: 'margin-top: auto; padding-top: 2rem; padding-bottom: 1rem; text-align: center;' },
-  h('button', { class: 'lnk', type: 'button', onclick: () => nav('privacy') }, t('privacy')), ' · ',
-  h('button', { class: 'lnk', type: 'button', onclick: () => nav('terms') }, t('terms')), ' · ',
-  h('button', { class: 'lnk', type: 'button', onclick: () => banner(true) }, t('cookies'))
-);
 
-main.style.display = 'flex';
-main.style.flexDirection = 'column';
-main.style.minHeight = 'calc(100vh - 120px)'; // גורם ל-main לתפוס את כל הגובה הפנוי
-main.replaceChildren(...(STATUS ? [h('p', { class: 'status', role: 'status' }, STATUS)] : []), v, lg);
+function go(){
+  const u=me();if(!V[route])route='recipes';
+  let v;if(['discover','saved','home','add'].includes(route)&&!u){if(!STATUS)STATUS=t('need');v=auth()}else v=V[route](u);
+  
+  $('#tabs').replaceChildren(...TABS.map(([r,i],k)=>h('button',{type:'button',class:k===2?'mid':'','aria-current':r===route?'page':false,onclick:()=>nav(r)},h('span',{class:'ic'},ic(i)),h('span',{},t(r)))));
+  
+  const lg = h('p', { class: 'legal', style: 'margin-top: auto; padding-top: 2rem; padding-bottom: 1rem; text-align: center;' },
+    h('button', { class: 'lnk', type: 'button', onclick: () => nav('privacy') }, t('privacy')), ' · ',
+    h('button', { class: 'lnk', type: 'button', onclick: () => nav('terms') }, t('terms')), ' · ',
+    h('button', { class: 'lnk', type: 'button', onclick: () => banner(true) }, t('cookies'))
+  );
 
+  main.style.display = 'flex';
+  main.style.flexDirection = 'column';
+  main.style.minHeight = 'calc(100vh - 120px)'; // גורם ל-main לתפוס את כל הגובה הפנוי
+  main.replaceChildren(...(STATUS ? [h('p', { class: 'status', role: 'status' }, STATUS)] : []), v, lg);
+  
+  STATUS=''; document.title=t(route)+' – Dishboard'; main.focus(); window.scrollTo(0,0);
+} // <--- כאן הפונקציה באמת צריכה להיסגר!
 
 if (typeof supabaseClient !== 'undefined') {
   supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -632,4 +638,4 @@ loadCloudData().then(() => {
   applyLang();
   go();
   banner();
-});}
+});
