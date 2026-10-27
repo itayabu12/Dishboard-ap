@@ -18,23 +18,18 @@
 <link rel="apple-touch-icon" href="icon.png?v=2">
 </head>
 <body>
-  <a class="skip" href="#main" id="skip">דלג לתוכן הראשי</a>
-  
-  <header>
-    <!-- כאן יושבים כפתורי הנגישות וההגדרות שלך -->
-    <button type="button" id="ab" class="btn alt"></button>
-    <button type="button" id="sb" class="btn alt"></button>
-  </header>
+<a class="skip" href="#main" id="skip"></a>
+<header>
+  <button class="btn alt" type="button" id="sb" aria-haspopup="dialog"></button>
+  <a class="brand" href="#" id="brand" style="text-decoration:none">Dishboard</a>
+  <button class="btn alt" type="button" id="ab" aria-haspopup="dialog"></button>
+</header>
+<main id="main" tabindex="-1"></main>
+<nav class="tabs" id="tabs"></nav>
 
-  <!-- זה האזור החשוב ביותר שבו ה-JS מצייר את כל האפליקציה! -->
-  <main id="main" tabindex="-1"></main>
-
-  <!-- הטאבים התחתונים -->
-  <nav class="tabs" id="tabs" aria-label="Dishboard"></nav>
-
-  <!-- טעינת הסקריפטים בסוף -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabaseClient.js"></script>
-  <script src="app.js"></script>
+<!-- טעינת Supabase והקבצים שלנו -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabaseClient.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
