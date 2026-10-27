@@ -169,35 +169,52 @@ function pickFolder(r,u,done){
     h('div',{class:'row'},h('button',{type:'button',class:'btn',onclick:e=>put(nw.value,e)},t('addF')))
   ),[[t('cancel'),null,'alt']]);
 }
-function card(r,u,ex){
-  const x=(lang!=='he'&&r.tr&&r.tr[lang])||r,
-        ok=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(r.img||''),
-        fv=u&&Object.values(u.cols).some(a=>a.includes(r.id)),
-        vl=vurl(r.vid);
-  return h('li',{class:'card'},
-    ok?h('img',{src:r.img,alt:r.alt,loading:'lazy'}):ph(r),
-    h('h2',{},x.title),
-    h('p',{class:'meta'},(r.prep+r.cook)+' '+t('mins')+' · '+t(r.diff)+' · '+t('by')+' '+r.by),
-    h('p',{class:'tags'},...r.cats.map(c=>h('span',{class:'tag'},t(c)))),
-    ex?h('p',{class:'match'},ex):'',
-    h('details',{},
-      h('summary',{},t('ingH')+' · '+t('method')),
-      h('ul',{},...x.ing.map(i=>h('li',{},i))),
-      h('p',{},x.desc)
+
+
+
+function card(r, u, ex) {
+  const x = (lang !== 'he' && r.tr && r.tr[lang]) || r,
+        ok = /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(r.img || '') || (r.img && String(r.img).startsWith('http')),
+        fv = u && Object.values(u.cols).some(a => a.includes(r.id)),
+        vl = vurl(r.vid);
+  
+  const isMine = u && r.uid === u.id; // בודק האם המתכון שייך למשתמש המחובר
+
+  return h('li', { class: 'card' },
+    ok ? h('img', { src: r.img, alt: r.alt, loading: 'lazy' }) : ph(r),
+    h('h2', {}, x.title),
+    h('p', { class: 'meta' }, (r.prep + r.cook) + ' ' + t('mins') + ' · ' + t(r.diff) + ' · ' + t('by') + ' ' + r.by),
+    h('p', { class: 'tags' }, ...r.cats.map(c => h('span', { class: 'tag' }, t(c)))),
+    ex ? h('p', { class: 'match' }, ex) : '',
+    h('details', {},
+      h('summary', {}, t('ingH') + ' · ' + t('method')),
+      h('ul', {}, ...x.ing.map(i => h('li', {}, i))),
+      h('p', {}, x.desc)
     ),
-    vl?h('a',{class:'btn alt',href:vl,target:'_blank',rel:'noopener noreferrer'},'▶ '+t('watch'),h('span',{class:'sr'},' – '+x.title)):'',
-    h('div',{class:'row'},
-      h('button',{class:'btn alt',type:'button','aria-pressed':String(!!fv),onclick:e=>fav(r,e.currentTarget)},t('save'),h('span',{class:'sr'},' – '+x.title)),
-      u&&r.uid===u.id?h('button',{class:'btn alt',type:'button',onclick:()=>dlg(t('delRT'),h('p',{},x.title+' – '+t('delRB')),[[t('del',async ()=>{
-        await supabaseClient.from('recipes').delete().eq('id', r.id);
-        db.recipes=db.recipes.filter(z=>z.id!==r.id);
-        db.users.forEach(z=>{for(const n in (z.cols||{}))z.cols[n]=z.cols[n].filter(i=>!ids.includes(i))});
-        await save();
-        STATUS=t('okDel');
-        go();
-      }),'danger'],[t('cancel'),null,'alt']])},t('del'),h('span',{class:'sr'},' – '+x.title)):'')
+    vl ? h('a', { class: 'btn alt', href: vl, target: '_blank', rel: 'noopener noreferrer' }, '▶ ' + t('watch'), h('span', { class: 'sr' }, ' – ' + x.title)) : '',
+    h('div', { class: 'row', style: 'flex-wrap: wrap; gap: 0.5rem;' },
+      h('button', { class: 'btn alt', type: 'button', 'aria-pressed': String(!!fv), onclick: e => fav(r, e.currentTarget) }, t('save'), h('span', { class: 'sr' }, ' – ' + x.title)),
+      
+      // כפתור העתקה - מופיע רק אם אתה מחובר והמתכון *לא* שלך
+      u && !isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'dup' }; nav('add'); } }, t('dup')) : '',
+      
+      // כפתור עריכה - מופיע רק אם המתכון *שלך*
+      isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'edit' }; nav('add'); } }, t('edit')) : '',
+      
+      // כפתור מחיקה - מופיע רק אם המתכון *שלך*
+      isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => dlg(t('delRT'), h('p', {}, x.title + ' – ' + t('delRB')), [[t('del', async () => {
+        if (typeof supabaseClient !== 'undefined') await supabaseClient.from('recipes').delete().eq('id', r.id);
+        db.recipes = db.recipes.filter(z => z.id !== r.id);
+        db.users.forEach(z => { for (const n in (z.cols || {})) z.cols[n] = z.cols[n].filter(i => i !== r.id) });
+        await save(); STATUS = t('okDel'); go();
+      }), 'danger'], [t('cancel'), null, 'alt']]) }, t('del'), h('span', { class: 'sr' }, ' – ' + x.title)) : ''
     )
+  )
 }
+
+
+
+
 const grid=(rs,u,ex)=>h('ul',{class:'grid'},...rs.map(r=>card(r,u,ex&&ex(r))));
 async function procImg(f){if(f.size>3e6)throw t('eImgS');const b=new Uint8Array(await f.slice(0,12).arrayBuffer());
 if(!((b[0]==255&&b[1]==216&&b[2]==255)||(b[0]==137&&b[1]==80&&b[2]==78&&b[3]==71)||(b[0]==82&&b[1]==73&&b[2]==70&&b[3]==70&&b[8]==87&&b[9]==69)))throw t('eImgT');
@@ -264,7 +281,7 @@ home(u) {
     const isEdit = draft && draft._mode === 'edit';
 
     const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
-    const wrap = h('section', {}, h('h1', { id: 'sh' }, isEdit ? t('edit') : t('add')));
+    const wrap = h('section', {}, h('h1', { id: 'sh' }, isEdit ? t('edit') : (draft ? t('add') + ' (העתקה)' : t('add'))));
     const scanInput = h('input', { type: 'file', accept: 'image/*', style: 'display:none' });
 
     const onScan = async e => {
@@ -272,18 +289,14 @@ home(u) {
       renderForm(true);
       const st = wrap.querySelector('#scs');
       const set = (id, v) => { const el = wrap.querySelector('#' + id); if (el && v != null && String(v).trim() !== '') el.value = v };
-      
       if (st) st.textContent = lang === 'he' ? 'סורק ומנתח טקסט (זה עשוי לקחת קצת זמן)...' : 'Scanning...';
-      
       try {
         if (typeof Tesseract === 'undefined') throw new Error('Tesseract not loaded');
         const { data: { text } } = await Tesseract.recognize(file, 'heb');
         if (!text || text.trim() === '') throw new Error('לא זוהה טקסט');
-        
         const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
         let title = lines[0] || 'מתכון סרוק';
         let ing = [], meth = [], mode = 'meth';
-        
         lines.forEach(l => {
           if (l.includes('רכיבים') || l.includes('מצרכים')) mode = 'ing';
           else if (l.includes('הכנה') || l.includes('אופן')) mode = 'meth';
@@ -291,9 +304,8 @@ home(u) {
           else meth.push(l);
         });
         if (ing.length === 0 && meth.length > 4) { ing = meth.slice(0, 4); meth = meth.slice(4); }
-
         set('t', title); set('i', ing.join('\n')); set('d', meth.join('\n') || text); set('p', '15'); set('c', '45');
-        if (st) st.textContent = lang === 'he' ? 'הסריקה הושלמה! (שימו לב: תמונות עם עמודות מצריכות סידור ידני קל)' : 'Scan complete.';
+        if (st) st.textContent = lang === 'he' ? 'הסריקה הושלמה!' : 'Scan complete.';
       } catch (err) {
         if (st) st.textContent = lang === 'he' ? 'הסריקה נכשלה. נסו להזין ידנית.' : 'Scan failed.';
       } finally {
@@ -381,7 +393,7 @@ home(u) {
         h('div', { class: 'row' }, h('button', { id: 'sbtn', class: 'btn', type: 'submit' }, isEdit ? t('updateBtn') : t('publish')))
       );
       
-      // אם הגענו מעריכה/שכפול, ממלא את השדות
+      // ממלא את השדות אם מדובר בעריכה או העתקה
       if (draft) {
         setTimeout(() => {
           const q = i => f.querySelector('#' + i);
@@ -395,7 +407,7 @@ home(u) {
         }, 0);
       }
       
-      wrap.replaceChildren(h('h1', { id: 'sh' }, isEdit ? t('edit') : t('add')), f);
+      wrap.replaceChildren(h('h1', { id: 'sh' }, isEdit ? t('edit') : (draft ? t('add') : t('add'))), f);
       if (isLoading) { const btn = wrap.querySelector('#sbtn'); if(btn) btn.disabled = true; }
     };
 
@@ -408,7 +420,6 @@ home(u) {
 
 
 
-  
 acc(u){
   const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};
   return h('section',{},
