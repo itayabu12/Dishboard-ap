@@ -62,8 +62,7 @@ function ph(r){const d=h('div',{class:'ph c-'+(r.cats[0]||'x'),'aria-hidden':'tr
 function heroArt(){const d=h('div',{class:'art','aria-hidden':'true'});d.innerHTML=HERO;return d}
 Object.assign(D,{remember:['השאירו אותי מחובר/ת במכשיר הזה','Keep me signed in on this device'],fridgeL:['מה יש לך במקרר?','What’s in your fridge?'],fridgeH:['רשמו מצרכים מופרדים בפסיקים ונמצא מתכונים שמתאימים. בקרוב: צילום המקרר.','List ingredients separated by commas and we’ll find matching recipes. Coming soon: photograph your fridge.'],bySearch:['חיפוש חופשי','Search'],byFridge:['מה יש במקרר','From my fridge'],modeL:['שיטת חיפוש','Search mode'],have:['יש לך','You have'],of:['מתוך','of'],miss:['חסר','Missing'],fridgeH2:['כתבו מה יש לכם במקרר כדי לראות מתכונים מתאימים.','Type what you have to see matching recipes.']});
 let lang='he';
-const t=(k,n)=>D[k][lang==='he'?0:1].replace('{n}',n);
-const pers=(k,v)=>{const c=store.get('fm_consent',null);if(c&&c.pref)store.set(k,v)};
+const t = (k, n) => (D[k] ? D[k][lang === 'he' ? 0 : 1] : k).replace('{n}', n || '');const pers=(k,v)=>{const c=store.get('fm_consent',null);if(c&&c.pref)store.set(k,v)};
 {const c=store.get('fm_consent',null);if(c&&c.pref){lang=store.get('fm_lang','he');['contrast','size','font'].forEach(k=>{const v=store.get('fm_'+k,null);if(v)root.setAttribute('data-'+k,v)})}}
 const pref=(k,v)=>{root.setAttribute('data-'+k,v);pers('fm_'+k,v)};
 function applyLang(){root.lang=lang;root.dir=lang==='he'?'rtl':'ltr';[['#ab','a11y','access'],['#sb','settings','gear']].forEach(([s,k,i])=>{const a=$(s);a.setAttribute('aria-label',t(k));a.title=t(k);a.replaceChildren(ic(i))});$('#skip').textContent=t('skip');$('#tabs').setAttribute('aria-label','Dishboard')}
@@ -410,7 +409,8 @@ h('button',{class:'btn alt',type:'button',onclick:async ()=>{
 }},t('google')),f)}
 
 const TABS=[['recipes','recipes'],['discover','discover'],['home','home'],['add','plus'],['saved','saved']];
-function go(){const u=me();if(!V[route])route='recipes';let v;if(['discover','saved','home','add'].includes(route)&&!u){if(!STATUS)STATUS=t('need');v=auth()}else v=V[route](u);
+function go(){const u=me();if(!V[route])route='recipes';
+let v;if(['discover','saved','home','add'].includes(route)&&!u){if(!STATUS)STATUS=t('need');v=auth()}else v=V[route](u);
 $('#tabs').replaceChildren(...TABS.map(([r,i],k)=>h('button',{type:'button',class:k===2?'mid':'','aria-current':r===route?'page':false,onclick:()=>nav(r)},h('span',{class:'ic'},ic(i)),h('span',{},t(r)))));
 const lg=h('p',{class:'legal'},h('button',{class:'lnk',type:'button',onclick:()=>nav('privacy')},t('privacy')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>nav('terms')},t('terms')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>banner(true)},t('cookies')));
 main.replaceChildren(...(STATUS?[h('p',{class:'status',role:'status'},STATUS)]:[]),v,lg);STATUS='';document.title=t(route)+' – Dishboard';main.focus();window.scrollTo(0,0)}
