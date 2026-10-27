@@ -230,7 +230,6 @@ function pickFolder(r,u,done){
   ),[[t('cancel'),null,'alt']]);
 }
 
-
 function card(r, u, ex) {
   const x = (lang !== 'he' && r.tr && r.tr[lang]) || r,
         ok = /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(r.img || '') || (r.img && String(r.img).startsWith('http')),
@@ -257,10 +256,10 @@ function card(r, u, ex) {
       // כפתור העתקה - מופיע רק אם אתה מחובר והמתכון *לא* שלך
       u && !isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'dup' }; nav('add'); } }, t('dup')) : '',
       
-      // כפתור עריכה - מופיע רק אם המתכון *שלך*
+      // כפתור עריכה (שינוי) - מופיע רק אם המתכון שלך
       isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'edit' }; nav('add'); } }, t('edit'), h('span', { class: 'sr' }, ' – ' + x.title)) : '',
       
-      // כפתור מחיקה - מופיע נפרד לגמרי רק אם המתכון *שלך*
+      // כפתור מחיקה - מופיע רק אם המתכון שלך
       isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => dlg(t('delRT'), h('p', {}, x.title + ' – ' + t('delRB')), [
         [t('del'), async () => {
           if (typeof supabaseClient !== 'undefined') await supabaseClient.from('recipes').delete().eq('id', r.id);
@@ -273,7 +272,6 @@ function card(r, u, ex) {
     )
   )
 }
-
 
 
 const grid=(rs,u,ex)=>h('ul',{class:'grid'},...rs.map(r=>card(r,u,ex&&ex(r))));
