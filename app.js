@@ -409,33 +409,66 @@ home(u) {
           
           try {
             const sc = typeof supabaseClient !== 'undefined' ? supabaseClient : SB;
+            
             if (file) {
-              path = u.id + '/' + crypto.randomUUID() + '.jpg';
-              const up = await sc.storage.from(BUCKET).upload(path, file, { contentType: file.type || 'image/jpeg' });
-              if (!up.error) {
-                img = sc.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+              // יוצרים נתיב נקי ומזהה ייחודי לתמונה
+              path = (u ? u.id : 'public') + '/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+              
+              console.log('מעלה תמונה ל-Storage:', path);
+              
+              const up = await sc.storage.from(BUCKET).upload(path, file, { 
+                contentType: file.type || 'image/jpeg',
+                upsert: true 
+              });
+              
+              if (up.error) {
+                console.error('שגיאה בהעלאת התמונה ל-Storage:', up.error);
+                throw new Error(up.error.message);
               }
+              
+              // שליפת ה-Public URL של התמונה שהועלתה בהצלחה
+              const urlData = sc.storage.from(BUCKET).getPublicUrl(path);
+              img = urlData.data.publicUrl;
+              console.log('התמונה הועלתה בהצלחה! כתובת:', img);
             }
             
             const newId = isEdit ? draft.id : crypto.randomUUID();
             const finalImg = img || (draft ? draft.img : '');
-            const row = { id: newId, uid: u.id, by: u.name, title: T, desc: d, ing, prep: pr, cook: ck, diff: q('df').value, cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), img: finalImg, alt: alt || T, vid: vr ? vurl(vr) : '' };
+            
+            // ודא שהאובייקט ששומר בדתא-בייס מכיל את שדה ה-img עם הכתובת החדשה
+            const row = { 
+              id: newId, 
+              uid: u ? u.id : 'anon', 
+              by: u ? u.name : 'Guest', 
+              title: T, 
+              desc: d, 
+              ing, 
+              prep: pr, 
+              cook: ck, 
+              diff: q('df').value, 
+              cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), 
+              img: finalImg, 
+              alt: alt || T, 
+              vid: vr ? vurl(vr) : '' 
+            };
             
             if (sc) {
               if (isEdit) {
-                await sc.from('recipes').update(row).eq('id', newId);
+                const { error } = await sc.from('recipes').update(row).eq('id', newId);
+                if (error) throw error;
                 const idx = db.recipes.findIndex(x => x.id === newId);
                 if (idx !== -1) db.recipes[idx] = row;
               } else {
-                const { data } = await sc.from('recipes').insert(row).select().single();
+                const { data, error } = await sc.from('recipes').insert(row).select().single();
+                if (error) throw error;
                 db.recipes.unshift(data || row);
               }
             }
             STATUS = t('okPub'); nav('home');
           } catch (x) {
-            // התעלמות שקטה משגיאות כדי שהמתכון תמיד יישמר בבסיס הנתונים בלי לתקוע את המשתמש
-            btn.disabled = false;
-            STATUS = t('okPub'); nav('home');
+            console.error('תקלה כללית בשמירה:', x);
+            btn.disabled = false; 
+            alert('שגיאה בשמירת התמונה/מתכון: ' + (x.message || x));
           }
         }
       },
