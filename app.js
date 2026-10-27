@@ -259,15 +259,15 @@ function card(r, u, ex) {
       u && !isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'dup' }; nav('add'); } }, t('dup')) : '',
       
       // כפתור עריכה - מופיע רק אם המתכון *שלך*
-      isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'edit' }; nav('add'); } }, t('edit')) : '',
-      
-      // כפתור מחיקה - מופיע רק אם המתכון *שלך*
-      isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => dlg(t('delRT'), h('p', {}, x.title + ' – ' + t('delRB')), [[t('del', async () => {
-        if (typeof supabaseClient !== 'undefined') await supabaseClient.from('recipes').delete().eq('id', r.id);
-        db.recipes = db.recipes.filter(z => z.id !== r.id);
-        db.users.forEach(z => { for (const n in (z.cols || {})) z.cols[n] = z.cols[n].filter(i => i !== r.id) });
-        await save(); STATUS = t('okDel'); go();
-      }), 'danger'], [t('cancel'), null, 'alt']]) }, t('del'), h('span', { class: 'sr' }, ' – ' + x.title)) : ''
+      isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => dlg(t('delRT'), h('p', {}, x.title + ' – ' + t('delRB')), [
+        [t('del'), async () => {
+          if (typeof supabaseClient !== 'undefined') await supabaseClient.from('recipes').delete().eq('id', r.id);
+          db.recipes = db.recipes.filter(z => z.id !== r.id);
+          db.users.forEach(z => { for (const n in (z.cols || {})) z.cols[n] = z.cols[n].filter(i => i !== r.id) });
+          await save(); STATUS = t('okDel'); go();
+        }, 'danger'],
+        [t('cancel'), null, 'alt']
+      ]) }, t('del'), h('span', { class: 'sr' }, ' – ' + x.title)) : ''
     )
   )
 }
