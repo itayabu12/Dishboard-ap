@@ -25,8 +25,9 @@ const P = {
   plus: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z',
   user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z',
   access: 'M12 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18z',
-  gear: 'M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.74 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.12.22.37.3.61.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.5-.42l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.49 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.01-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z'
+gear:'M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.74 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.12.22.37.3.61.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.5-.42l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.49 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.01-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z'
 };
+
 Object.assign(P,{recipes:'M4 5c3-1 5-1 8 1 3-2 5-2 8-1v14c-3-1-5-1-8 1-3-2-5-2-8-1z M12 6v14',discover:'M5 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z M8 3h8 M9 14h6 M13 12l2 2-2 2',home:'M4 11l8-7 8 7 M6 10v10h12V10 M10 20v-6h4v6',plus:'M12 5v14M5 12h14',saved:'M6 4h12v17l-6-4-6 4z',heart:'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',close:'M6 6l12 12M18 6L6 18',bowl:'M4 12h16a8 8 0 0 1-16 0z M9 8c0-1.5 1-1.5 1-3 M13 8c0-1.5 1-1.5 1-3',access:'M12 5.2a1.2 1.2 0 1 0 .01 0 M5 9l7 1.5L19 9 M12 10.5V15 M9 20l3-5 3 5',gear:'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8'});
 function ic(n){const N='http://www.w3.org/2000/svg',s=document.createElementNS(N,'svg'),p=document.createElementNS(N,'path');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');p.setAttribute('d',P[n]);s.append(p);return s}
 const D={recipes:['מתכונים','Recipes'],favs:['מועדפים','Favorites'],home:['ראשי','Home'],add:['הוספה','Add'],acc:['חשבון','Account'],
@@ -77,7 +78,67 @@ const pref=(k,v)=>{root.setAttribute('data-'+k,v);pers('fm_'+k,v)};
 function applyLang(){root.lang=lang;root.dir=lang==='he'?'rtl':'ltr';[['#ab','a11y','access'],['#sb','settings','gear']].forEach(([s,k,i])=>{const a=$(s);a.setAttribute('aria-label',t(k));a.title=t(k);a.replaceChildren(ic(i))});$('#skip').textContent=t('skip');$('#tabs').setAttribute('aria-label','Dishboard')}
 function setLang(l){lang=l;pers('fm_lang',lang);applyLang();go();if($('.cookie'))banner(true)}
 $('#sb').onclick=()=>dlg(t('settings'),h('div',{role:'group','aria-label':t('langL')},h('p',{class:'meta'},t('langL')),h('div',{class:'row'},...[['he','עברית'],['en','English']].map(([l,n])=>h('button',{type:'button',class:'btn alt',lang:l,'aria-pressed':String(lang===l),onclick:()=>{setLang(l);document.querySelector('dialog')?.close()}},n))),acctBox()),[[t('close'),null]]);
-function acctBox(){const u=me(),box=h('div',{class:'acct'},h('h3',{},t('acc')));if(u){const a=V.acc(u);a.querySelector('h1')?.remove();a.addEventListener('click',e=>{if(e.target.closest('button'))setTimeout(()=>document.querySelector('dialog')?.close(),0)});box.append(a)}else box.append(h('div',{class:'row'},...[['in','login'],['up','signup']].map(([m,l])=>h('button',{type:'button',class:'btn'+(m==='up'?' alt':''),onclick:e=>{mode=m;e.currentTarget.closest('dialog').close();nav('home')}},t(l)))));return box}
+function acctBox() {
+  const u = me();
+  const box = h('div', { class: 'acct', style: 'margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;' });
+  
+  if (u) {
+    // יצירת תמונת הפרופיל או עיגול עם אות ראשונה אם אין תמונה
+    const avatar = u.avatar 
+      ? h('img', { src: u.avatar, alt: 'Profile', style: 'width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1);' }) 
+      : h('div', { style: 'width: 54px; height: 54px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;' }, u.name.charAt(0));
+    
+    // כרטיס פרופיל מעוצב
+    const profileHeader = h('div', { style: 'display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; background: rgba(0,0,0,0.03); padding: 1rem; border-radius: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);' }, 
+      avatar,
+      h('div', { style: 'text-align: start;' }, 
+        h('strong', { style: 'display: block; font-size: 1.1rem; margin-bottom: 0.2rem;' }, u.name),
+        h('span', { class: 'meta', style: 'font-size: 0.85rem; margin: 0;' }, u.email)
+      )
+    );
+
+    const actions = h('div', { class: 'row', style: 'justify-content: space-between; gap: 1rem;' },
+      h('button', { class: 'btn danger', type: 'button', style: 'flex: 1;', onclick: () => dlg(t('delAccT'), h('p', {}, t('delAccB')), [[t('delAll', async () => {
+        if (typeof supabaseClient !== 'undefined') {
+          const ids = db.recipes.filter(r => r.uid === u.id).map(r => r.id);
+          if (ids.length > 0) await supabaseClient.from('recipes').delete().in('id', ids);
+          await supabaseClient.from('user_collections').delete().eq('uid', u.id);
+          await supabaseClient.auth.signOut();
+        }
+        db.recipes = db.recipes.filter(r => r.uid !== u.id);
+        user = null; STATUS = t('okAcc'); nav('recipes');
+      }), 'danger'], [t('cancel'), null, 'alt']]) }, t('delAcc')),
+      
+      h('button', { class: 'btn alt', type: 'button', style: 'flex: 1;', onclick: async () => {
+        if(typeof supabaseClient !== 'undefined') await supabaseClient.auth.signOut();
+        user = null; STATUS = t('okOut'); nav('recipes'); document.querySelector('dialog')?.close();
+      }}, t('logout'))
+    );
+
+    box.append(
+      h('h3', { style: 'margin-bottom: 1rem; font-size: 1.2rem;' }, t('acc')), 
+      profileHeader, 
+      h('p', { class: 'meta', style: 'font-size: 0.85rem; margin-bottom: 1.5rem; text-align: center;' }, t('dataNote')), 
+      actions
+    );
+  } else {
+    box.append(
+      h('h3', { style: 'margin-bottom: 1rem;' }, t('acc')),
+      h('p', { class: 'meta', style: 'margin-bottom: 1.5rem; text-align: center;' }, t('need')),
+      h('div', { class: 'row', style: 'justify-content: center;' },
+        h('button', { class: 'btn yes', type: 'button', style: 'width: 100%; padding: 0.8rem; font-size: 1.05rem;', onclick: async () => {
+          if (typeof supabaseClient !== 'undefined') {
+            const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
+            if (error) console.error(error.message);
+          }
+        }}, t('google'))
+      )
+    );
+  }
+  return box;
+}
+
+
 $('#brand').onclick=e=>{e.preventDefault();nav('recipes')};
 $('#skip').onclick=e=>{e.preventDefault();main.focus()};
 const SEED=[
@@ -520,36 +581,55 @@ const TABS=[['recipes','recipes'],['discover','discover'],['home','home'],['add'
 function go(){const u=me();if(!V[route])route='recipes';
 let v;if(['discover','saved','home','add'].includes(route)&&!u){if(!STATUS)STATUS=t('need');v=auth()}else v=V[route](u);
 $('#tabs').replaceChildren(...TABS.map(([r,i],k)=>h('button',{type:'button',class:k===2?'mid':'','aria-current':r===route?'page':false,onclick:()=>nav(r)},h('span',{class:'ic'},ic(i)),h('span',{},t(r)))));
-const lg=h('p',{class:'legal'},h('button',{class:'lnk',type:'button',onclick:()=>nav('privacy')},t('privacy')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>nav('terms')},t('terms')),' · ',h('button',{class:'lnk',type:'button',onclick:()=>banner(true)},t('cookies')));
-main.replaceChildren(...(STATUS?[h('p',{class:'status',role:'status'},STATUS)]:[]),v,lg);STATUS='';document.title=t(route)+' – Dishboard';main.focus();window.scrollTo(0,0)}
+const lg = h('p', { class: 'legal', style: 'margin-top: auto; padding-top: 2rem; padding-bottom: 1rem; text-align: center;' },
+  h('button', { class: 'lnk', type: 'button', onclick: () => nav('privacy') }, t('privacy')), ' · ',
+  h('button', { class: 'lnk', type: 'button', onclick: () => nav('terms') }, t('terms')), ' · ',
+  h('button', { class: 'lnk', type: 'button', onclick: () => banner(true) }, t('cookies'))
+);
 
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (session) {
-    const em = session.user.email;
-    let u = db.users.find(x => x.email === em);
-    if (!u) {
-      u = { 
-        id: session.user.id, 
-        email: em, 
-        name: session.user.user_metadata?.full_name || em.split('@')[0], 
-        cols: {}, 
-        skip: [] 
-      };
-      db.users.push(u);
-      save();
+main.style.display = 'flex';
+main.style.flexDirection = 'column';
+main.style.minHeight = 'calc(100vh - 120px)'; // גורם ל-main לתפוס את כל הגובה הפנוי
+main.replaceChildren(...(STATUS ? [h('p', { class: 'status', role: 'status' }, STATUS)] : []), v, lg);
+
+
+if (typeof supabaseClient !== 'undefined') {
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      const em = session.user.email;
+      const md = session.user.user_metadata || {};
+      let u = db.users.find(x => x.email === em);
+      
+      if (!u) {
+        u = { 
+          id: session.user.id, 
+          email: em, 
+          name: md.full_name || md.name || em.split('@')[0], 
+          avatar: md.avatar_url || md.picture || '', // הנה תמונת הפרופיל מ-Google!
+          cols: {}, 
+          skip: [] 
+        };
+        db.users.push(u);
+        save();
+      } else {
+        // אם המשתמש כבר קיים, רק נוודא שהתמונה שלו מעודכנת
+        u.avatar = md.avatar_url || md.picture || u.avatar || '';
+      }
+      
+      const justLoggedIn = !me();
+      sess = { uid: u.id, exp: Date.now() + 18e5 };
+      try { sessionStorage.setItem('fm_s', JSON.stringify(sess)); } catch(e) {}
+      
+      if (justLoggedIn) {
+        STATUS = t('okIn');
+        nav('home');
+      }
     }
-    const justLoggedIn = !me();
-    sess = { uid: u.id, exp: Date.now() + 18e5 };
-    sessionStorage.setItem('fm_s', JSON.stringify(sess));
-    if (justLoggedIn) {
-      STATUS = t('okIn');
-      nav('home');
-    }
-  }
-});
+  });
+}
 
 loadCloudData().then(() => {
   applyLang();
   go();
   banner();
-});
+});}
