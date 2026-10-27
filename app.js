@@ -231,7 +231,6 @@ function pickFolder(r,u,done){
 }
 
 
-
 function card(r, u, ex) {
   const x = (lang !== 'he' && r.tr && r.tr[lang]) || r,
         ok = /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(r.img || '') || (r.img && String(r.img).startsWith('http')),
@@ -259,6 +258,9 @@ function card(r, u, ex) {
       u && !isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'dup' }; nav('add'); } }, t('dup')) : '',
       
       // כפתור עריכה - מופיע רק אם המתכון *שלך*
+      isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => { window.fmDraft = { ...r, _mode: 'edit' }; nav('add'); } }, t('edit'), h('span', { class: 'sr' }, ' – ' + x.title)) : '',
+      
+      // כפתור מחיקה - מופיע נפרד לגמרי רק אם המתכון *שלך*
       isMine ? h('button', { class: 'btn alt', type: 'button', onclick: () => dlg(t('delRT'), h('p', {}, x.title + ' – ' + t('delRB')), [
         [t('del'), async () => {
           if (typeof supabaseClient !== 'undefined') await supabaseClient.from('recipes').delete().eq('id', r.id);
@@ -271,7 +273,6 @@ function card(r, u, ex) {
     )
   )
 }
-
 
 
 
