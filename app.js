@@ -336,7 +336,7 @@ home(u) {
   
   add(u) {
     const draft = window.fmDraft || null;
-    window.fmDraft = null; // מנקה את הזיכרון
+    window.fmDraft = null; 
     const isEdit = draft && draft._mode === 'edit';
 
     const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
@@ -387,7 +387,8 @@ home(u) {
 
     const renderForm = (isLoading = false) => {
       const f = h('form', {
-        novalidate: true, onsubmit: async e => {
+        novalidate: true, 
+        onsubmit: async e => {
           e.preventDefault();
           const btn = f.querySelector('button[type=submit]'); if (btn.disabled) return;
           const q = i => f.querySelector('#' + i), errs = [], T = clean(q('t').value, 80), d = clean(q('d').value, 1500), ing = q('i').value.split('\n').map(x => clean(x, 120)).filter(Boolean).slice(0, 40),
@@ -402,9 +403,9 @@ home(u) {
           try {
             const sc = typeof supabaseClient !== 'undefined' ? supabaseClient : SB;
             if (file) {
-              const blob = await prep(file, 1000, .82);
+              if (file.size > 5e6) throw new Error(t('eImgS'));
               path = u.id + '/' + crypto.randomUUID() + '.jpg';
-              const up = await sc.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg' });
+              const up = await sc.storage.from(BUCKET).upload(path, file, { contentType: file.type || 'image/jpeg' });
               if (up.error) throw new Error(t('eSave'));
               img = sc.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
             }
@@ -428,7 +429,8 @@ home(u) {
             STATUS = t('okPub'); nav('home');
           } catch (x) {
             if (path && typeof supabaseClient !== 'undefined') supabaseClient.storage.from(BUCKET).remove([path]);
-            btn.disabled = false; showErrs(f, [{ id: file ? 'im' : 't', msg: (x && x.message) || String(x) }]);
+            btn.disabled = false; 
+            showErrs(f, [{ id: file ? 'im' : 't', msg: (x && x.message) || t('eSave') }]);
           }
         }
       },
@@ -452,7 +454,6 @@ home(u) {
         h('div', { class: 'row' }, h('button', { id: 'sbtn', class: 'btn', type: 'submit' }, isEdit ? t('updateBtn') : t('publish')))
       );
       
-      // ממלא את השדות אם מדובר בעריכה או העתקה
       if (draft) {
         setTimeout(() => {
           const q = i => f.querySelector('#' + i);
@@ -473,9 +474,6 @@ home(u) {
     if (draft) renderForm(); else renderChoice();
     return wrap;
   },
-
-
-
 
 
 
