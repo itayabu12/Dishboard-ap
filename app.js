@@ -1,6 +1,6 @@
 /* Dishboard – app.js */
 const SB = typeof supabaseClient !== 'undefined' ? supabaseClient : null;
-const BUCKET = 'recipe-images';
+const BUCKET = 'recipes';
 const $ = s => document.querySelector(s), main = $('#main'), root = document.documentElement;
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d } catch (e) { return d } },
