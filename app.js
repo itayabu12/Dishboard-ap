@@ -138,9 +138,8 @@ function acctBox() {
   return box;
 }
 
-
-$('#brand').onclick=e=>{e.preventDefault();nav('recipes')};
-$('#skip').onclick=e=>{e.preventDefault();main.focus()};
+if($('#brand')) $('#brand').onclick=e=>{e.preventDefault();nav('recipes')};
+if($('#skip')) $('#skip').onclick=e=>{e.preventDefault();main.focus()};
 const SEED=[
 {id:'s1',uid:'',by:'fitme',title:'קארי חומוס וקוקוס',desc:'מטגנים בצל ושום, מוסיפים משחת קארי, חומוס, עגבניות משומרות וחלב קוקוס. מבשלים 15 דקות ומגישים עם אורז.',ing:['קופסת חומוס','קופסת חלב קוקוס','קופסת עגבניות','בצל אחד','2 כפות משחת קארי'],prep:10,cook:20,diff:'easy',cats:['vegan','budget'],img:'',alt:'',vid:'',tr:{en:{title:'Chickpea Coconut Curry',desc:'Fry onion and garlic, add curry paste, chickpeas, tinned tomatoes and coconut milk. Simmer 15 minutes. Serve with rice.',ing:['1 tin chickpeas','1 tin coconut milk','1 tin tomatoes','1 onion','2 tbsp curry paste']}}},
 {id:'s2',uid:'',by:'fitme',title:'פסטה במחבת אחת',desc:'מטגנים נקניקיות פרוסות, מוסיפים פסטה, רסק עגבניות ומים. מכסים ומבשלים כ־12 דקות עד שהפסטה רכה.',ing:['4 נקניקיות','200 גרם פסטה','400 גרם רסק עגבניות','500 מ״ל מים'],prep:5,cook:20,diff:'easy',cats:['meat','quick'],img:'',alt:'',vid:'',tr:{en:{title:'One-Pan Sausage Pasta',desc:'Brown sliced sausages, add pasta, passata and water. Cover and simmer about 12 minutes until tender.',ing:['4 sausages','200 g pasta','400 g passata','500 ml water']}}},
