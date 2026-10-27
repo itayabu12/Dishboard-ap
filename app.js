@@ -596,7 +596,7 @@ function go(){
   main.style.minHeight = 'calc(100vh - 120px)'; // גורם ל-main לתפוס את כל הגובה הפנוי
   main.replaceChildren(...(STATUS ? [h('p', { class: 'status', role: 'status' }, STATUS)] : []), v, lg);
   
-  STATUS=''; document.title=t(route)+' – Dishboard'; main.focus(); window.scrollTo(0,0);
+STATUS=''; document.title=t(route)+' – Dishboard'; main.focus(); window.scrollTo(0,0);
 } // <--- כאן הפונקציה באמת צריכה להיסגר!
 
 if (typeof supabaseClient !== 'undefined') {
