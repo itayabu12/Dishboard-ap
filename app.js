@@ -155,12 +155,12 @@ async function loadCloudData() {
       const { data: colData, error: cErr } = await supabaseClient
         .from('user_collections')
         .select('*')
-        .eq('uid', user.id)
-        .single();
+        .eq('uid', user.id);
       
-      if (!cErr && colData) {
-        user.cols = colData.cols || {};
-        user.skip = colData.skip || [];
+      // בדיקה בטוחה של המערך המוחזר מהשרת
+      if (!cErr && colData && colData.length > 0) {
+        user.cols = colData[0].cols || {};
+        user.skip = colData[0].skip || [];
       }
     }
   } catch (e) {
