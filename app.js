@@ -140,12 +140,9 @@ function acctBox() {
 
 if($('#brand')) $('#brand').onclick=e=>{e.preventDefault();nav('recipes')};
 if($('#skip')) $('#skip').onclick=e=>{e.preventDefault();main.focus()};
-const SEED=[
-{id:'s1',uid:'',by:'fitme',title:'קארי חומוס וקוקוס',desc:'מטגנים בצל ושום, מוסיפים משחת קארי, חומוס, עגבניות משומרות וחלב קוקוס. מבשלים 15 דקות ומגישים עם אורז.',ing:['קופסת חומוס','קופסת חלב קוקוס','קופסת עגבניות','בצל אחד','2 כפות משחת קארי'],prep:10,cook:20,diff:'easy',cats:['vegan','budget'],img:'',alt:'',vid:'',tr:{en:{title:'Chickpea Coconut Curry',desc:'Fry onion and garlic, add curry paste, chickpeas, tinned tomatoes and coconut milk. Simmer 15 minutes. Serve with rice.',ing:['1 tin chickpeas','1 tin coconut milk','1 tin tomatoes','1 onion','2 tbsp curry paste']}}},
-{id:'s2',uid:'',by:'fitme',title:'פסטה במחבת אחת',desc:'מטגנים נקניקיות פרוסות, מוסיפים פסטה, רסק עגבניות ומים. מכסים ומבשלים כ־12 דקות עד שהפסטה רכה.',ing:['4 נקניקיות','200 גרם פסטה','400 גרם רסק עגבניות','500 מ״ל מים'],prep:5,cook:20,diff:'easy',cats:['meat','quick'],img:'',alt:'',vid:'',tr:{en:{title:'One-Pan Sausage Pasta',desc:'Brown sliced sausages, add pasta, passata and water. Cover and simmer about 12 minutes until tender.',ing:['4 sausages','200 g pasta','400 g passata','500 ml water']}}},
-{id:'s3',uid:'',by:'fitme',title:'שבלולי קינמון למעונות',desc:'מרדדים בצק מוכן, מורחים חמאה, סוכר וקינמון, מגלגלים, פורסים ואופים ב־180 מעלות 20 דקות.',ing:['אריזת בצק שמרים','50 גרם חמאה','60 גרם סוכר','2 כפיות קינמון'],prep:20,cook:20,diff:'med',cats:['pastry','veg'],img:'',alt:'',vid:'',tr:{en:{title:'Dorm-Room Cinnamon Rolls',desc:'Roll out ready dough, spread with butter, sugar and cinnamon, roll, slice and bake at 180 °C for 20 minutes.',ing:['1 pack yeast dough','50 g butter','60 g sugar','2 tsp cinnamon']}}}];
-let db = { users: [], recipes: [...SEED] };
-db.recipes.forEach(r => { if (r.by === 'fitme') r.by = 'Dishboard'; });
+const SEED = []; // מתכוני דמו הוסרו
+let db = { users: [], recipes: [] };
+
 
 async function loadCloudData() {
   try {
@@ -173,13 +170,19 @@ async function loadCloudData() {
 
 const save = async () => {
   const user = me();
-  if (user) {
-    await supabaseClient.from('user_collections').upsert({
-      uid: user.id,
-      cols: user.cols,
-      skip: user.skip,
-      updated_at: new Date()
-    });
+  if (user && typeof supabaseClient !== 'undefined') {
+    const { error } = await supabaseClient
+      .from('user_collections')
+      .upsert({
+        uid: user.id,
+        cols: user.cols || {},
+        skip: user.skip || [],
+        updated_at: new Date()
+      }, { onConflict: 'uid' });
+
+    if (error) {
+      console.error('שגיאה בשמירת האוספים בשרת:', error.message);
+    }
   }
 };
 let sess=null;try{sess=JSON.parse(sessionStorage.getItem('fm_s'))}catch(e){}
@@ -234,13 +237,18 @@ function card(r, u, ex) {
   const x = (lang !== 'he' && r.tr && r.tr[lang]) || r,
         ok = /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(r.img || '') || (r.img && String(r.img).startsWith('http')),
         fv = u && Object.values(u.cols).some(a => a.includes(r.id)),
-        vl = vurl(r.vid);
-  
-  const isMine = u && r.uid === u.id; // בודק האם המתכון שייך למשתמש המחובר
+        vl = vurl(r.vid),
+        isMine = u && r.uid === u.id;
+
+  // תצוגת תמונה או אימוגי חלופי
+  const mediaEl = ok 
+    ? h('img', { src: r.img, alt: r.alt, loading: 'lazy' }) 
+    : h('div', { style: 'font-size: 4rem; text-align: center; padding: 2.5rem 0; background: rgba(0,0,0,0.02); border-radius: 8px;' }, r.emoji || '🍳');
 
   return h('li', { class: 'card' },
-    ok ? h('img', { src: r.img, alt: r.alt, loading: 'lazy' }) : ph(r),
+    mediaEl,
     h('h2', {}, x.title),
+    // ... שאר קוד הכרטיסייה נשאר ללא שינוי ...
     h('p', { class: 'meta' }, (r.prep + r.cook) + ' ' + t('mins') + ' · ' + t(r.diff) + ' · ' + t('by') + ' ' + r.by),
     h('p', { class: 'tags' }, ...r.cats.map(c => h('span', { class: 'tag' }, t(c)))),
     ex ? h('p', { class: 'match' }, ex) : '',
@@ -394,14 +402,16 @@ home(u) {
           const q = i => f.querySelector('#' + i), errs = [], T = clean(q('t').value, 80), d = clean(q('d').value, 1500), ing = q('i').value.split('\n').map(x => clean(x, 120)).filter(Boolean).slice(0, 40),
             pr = +q('p').value, ck = +q('c').value, file = q('im').files[0], alt = clean(q('a').value, 150), vr = q('v').value.trim();
           
+          // קליטת האימוגי כאן בהתחלה
+          const emojiVal = clean(q('emj').value, 5) || '🍳';
+
+          // בדיקות התקינות קודם כל
           if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') }); 
           if (!ing.length) errs.push({ id: 'i', msg: t('eIng') }); 
           if (d.length < 10) errs.push({ id: 'd', msg: t('eMeth') });
           if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') }); 
           if (q('c').value === '' || !(ck >= 0 && ck <= 600)) errs.push({ id: 'c', msg: t('eTime') });
           if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') }); 
-          
-          // הסרנו לחלוטין את הדרישה לטקסט חלופי כדי שלא יחסום אותך בשגיאות!
 
           showErrs(f, errs); if (errs.length) return;
           btn.disabled = true;
@@ -411,31 +421,23 @@ home(u) {
             const sc = typeof supabaseClient !== 'undefined' ? supabaseClient : SB;
             
             if (file) {
-              // יוצרים נתיב נקי ומזהה ייחודי לתמונה
               path = (u ? u.id : 'public') + '/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-              
-              console.log('מעלה תמונה ל-Storage:', path);
               
               const up = await sc.storage.from(BUCKET).upload(path, file, { 
                 contentType: file.type || 'image/jpeg',
                 upsert: true 
               });
               
-              if (up.error) {
-                console.error('שגיאה בהעלאת התמונה ל-Storage:', up.error);
-                throw new Error(up.error.message);
-              }
+              if (up.error) throw new Error(up.error.message);
               
-              // שליפת ה-Public URL של התמונה שהועלתה בהצלחה
               const urlData = sc.storage.from(BUCKET).getPublicUrl(path);
               img = urlData.data.publicUrl;
-              console.log('התמונה הועלתה בהצלחה! כתובת:', img);
             }
             
             const newId = isEdit ? draft.id : crypto.randomUUID();
             const finalImg = img || (draft ? draft.img : '');
             
-            // ודא שהאובייקט ששומר בדתא-בייס מכיל את שדה ה-img עם הכתובת החדשה
+            // בניית אובייקט ה-row מתבצעת כאן, אחרי שיש לנו את newId ו-finalImg
             const row = { 
               id: newId, 
               uid: u ? u.id : 'anon', 
@@ -448,6 +450,7 @@ home(u) {
               diff: q('df').value, 
               cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), 
               img: finalImg, 
+              emoji: emojiVal, // שמירת האימוגי שבחרת
               alt: alt || T, 
               vid: vr ? vurl(vr) : '' 
             };
@@ -487,6 +490,7 @@ home(u) {
         fld(t('diff'), 'df', h('select', { id: 'df' }, ...['easy', 'med', 'hard'].map(x => h('option', { value: x }, t(x))))),
         cats,
         fld(t('img'), 'im', h('input', { id: 'im', type: 'file', accept: 'image/jpeg,image/png,image/webp' }), t('imgH')),
+        fld(lang === 'he' ? 'אימוגי (במקום תמונה)' : 'Emoji (instead of image)', 'emj', h('input', { id: 'emj', maxlength: '5', placeholder: '🍝' })),
         fld(t('alt'), 'a', h('input', { id: 'a', maxlength: '150' }), t('altH')),
         fld(t('vid'), 'v', h('input', { id: 'v', type: 'url', inputmode: 'url', dir: 'ltr', autocomplete: 'off' }), t('vidH')),
         h('div', { class: 'row' }, h('button', { id: 'sbtn', class: 'btn', type: 'submit' }, isEdit ? t('updateBtn') : t('publish')))
@@ -501,6 +505,7 @@ home(u) {
           if(q('p')) q('p').value = draft.prep || 15;
           if(q('c')) q('c').value = draft.cook || 45;
           if(q('df')) q('df').value = draft.diff || 'easy';
+          if(q('emj')) q('emj').value = draft.emoji || '';
           if(draft.cats) { cats.querySelectorAll('input').forEach(cb => { cb.checked = draft.cats.includes(cb.value); }); }
         }, 0);
       }
