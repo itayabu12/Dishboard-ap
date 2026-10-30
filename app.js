@@ -222,10 +222,16 @@ function pickFolder(r,u,done){
   u.cols[n] = u.cols[n] || [];
   if (!u.cols[n].includes(r.id)) u.cols[n].push(r.id);
   
-  // 👈 חייב להיות כאן await לפני ה-save()
-  await save(); 
+  // שומרים את הדיאלוג מראש לפני שהאסינכרוניות מאפסת את האירוע
+  const dlgEl = e?.currentTarget?.closest('dialog') || document.querySelector('dialog');
   
-  e.currentTarget.closest('dialog').close();
+  await save(); // עכשיו הקוד יכול לחכות בסבלנות לשרת
+  
+  // סוגרים בבטחה את מה ששמרנו מראש
+  if (dlgEl) {
+    dlgEl.close();
+  }
+  
   done(n);
 };
   dlg(t('pickT'),h('div',{},
