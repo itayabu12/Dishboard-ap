@@ -528,14 +528,13 @@ home(u) {
             };
             
             if (sc) {
-              // מוסיפים תאריך עדכון למקרה שיש עמודת חובה בטבלה
-              const payload = { ...row, updated_at: new Date().toISOString() };
+              // הורדנו את ה-updated_at כי הוא לא קיים בטבלה הזו!
+              const payload = { ...row };
               
               if (isEdit) {
-                // מסירים את ה-id מהמידע הנשלח כדי שמסד הנתונים לא יחסום "דריסת מפתח ראשי"
+                // מסירים את ה-id כדי למנוע חסימה
                 const { id: _ignoreId, ...updateData } = payload;
                 
-                // הוספנו select() כדי לבדוק האם השרת באמת עדכן שורה או חסם אותנו
                 const { data, error } = await sc.from('recipes')
                   .update(updateData)
                   .eq('id', newId)
@@ -543,13 +542,12 @@ home(u) {
                   
                 if (error) throw error;
                 
-                // אם השרת מחזיר מערך ריק, סימן שחסרה הרשאת UPDATE (RLS) ב-Supabase!
                 if (!data || data.length === 0) {
                   alert("⚠️ האפליקציה ניסתה לעדכן, אבל Supabase חסם את הפעולה! יש להיכנס ל-Supabase ולהוסיף הרשאת UPDATE (RLS) לטבלת recipes.");
                 }
                 
                 const idx = db.recipes.findIndex(x => x.id === newId);
-                if (idx !== -1) db.recipes[idx] = row; // עדכון מקומי זמני
+                if (idx !== -1) db.recipes[idx] = row; 
               } else {
                 const { data, error } = await sc.from('recipes').insert(payload).select().single();
                 if (error) throw error;
