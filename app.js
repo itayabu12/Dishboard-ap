@@ -174,25 +174,43 @@ async function loadCloudData() {
 const save = async () => {
   const user = me();
   if (user && typeof supabaseClient !== 'undefined') {
-    const payload = {
-      uid: user.id,
-      cols: user.cols || {},
-      skip: user.skip || [],
-      updated_at: new Date().toISOString() // 👈 הנה העמודה החסרה שתשחרר את התקיעה!
-    };
-    
-    console.log("Sending to Supabase:", payload);
-
     try {
-      const { data, error } = await supabaseClient
+      // 1. שולפים את הנתונים הקיימים כרגע בענן כדי לא לדרוס כלום
+      const { data: existingData } = await supabaseClient
         .from('user_collections')
-        .upsert(payload, { onConflict: 'uid' })
-        .select();
+        .select('cols, skip')
+        .eq('uid', user.id);
+      
+      const cloudCols = (existingData && existingData.length > 0) ? (existingData[0].cols || {}) : {};
+      
+      // 2. מיזוג חכם: מאחדים את האוספים שבענן עם מה שיש כרגע באפליקציה
+      user.cols = user.cols || {};
+      for (const key in cloudCols) {
+        if (!user.cols[key]) {
+           // אם האוסף מהענן חסר באפליקציה - נחזיר אותו
+           user.cols[key] = cloudCols[key]; 
+        } else {
+           // אם האוסף קיים בשניהם - נאחד את המתכונים בלי כפילויות
+           user.cols[key] = [...new Set([...cloudCols[key], ...user.cols[key]])];
+        }
+      }
+      
+      // 3. בונים את החבילה המלאה ושולחים לשרת
+      const payload = {
+        uid: user.id,
+        cols: user.cols,
+        skip: user.skip || [],
+        updated_at: new Date().toISOString()
+      };
+      
+      const { error } = await supabaseClient
+        .from('user_collections')
+        .upsert(payload, { onConflict: 'uid' });
 
       if (error) {
-        console.error("❌ שגיאה בשמירת Supabase:", error.message, error.details);
+        console.error("❌ שגיאה בשמירת Supabase:", error.message);
       } else {
-        console.log("✅ נשמר בהצלחה ב-Supabase:", data);
+        console.log("✅ הכל נשמר ומוזג בהצלחה ב-Supabase!");
       }
     } catch (err) {
       console.error("🔥 קריסה בלתי צפויה בשמירה:", err);
