@@ -226,15 +226,22 @@ function pickFolder(r,u,done){
   const put = async (n, e) => {
   n = clean(n, 40);
   if (!n) return;
-  u.cols[n] = u.cols[n] || [];
-  if (!u.cols[n].includes(r.id)) u.cols[n].push(r.id);
   
-  // שומרים את הדיאלוג מראש לפני שהאסינכרוניות מאפסת את האירוע
+  // וודא שאובייקט האוספים קיים, ואם לא - ניצור אותו
+  u.cols = u.cols || {};
+  u.cols[n] = u.cols[n] || [];
+  
+  // מוסיפים את המתכון רק אם הוא עדיין לא קיים באוסף הזה
+  if (!u.cols[n].includes(r.id)) {
+    u.cols[n].push(r.id);
+  }
+  
+  // שומרים את הדיאלוג מראש לפני ה-await
   const dlgEl = e?.currentTarget?.closest('dialog') || document.querySelector('dialog');
   
-  await save(); // עכשיו הקוד יכול לחכות בסבלנות לשרת
+  // שומרים את כל האוספים המעודכנים לשרת
+  await save(); 
   
-  // סוגרים בבטחה את מה ששמרנו מראש
   if (dlgEl) {
     dlgEl.close();
   }
