@@ -142,7 +142,6 @@ if($('#brand')) $('#brand').onclick=e=>{e.preventDefault();nav('recipes')};
 if($('#skip')) $('#skip').onclick=e=>{e.preventDefault();main.focus()};
 const SEED = []; // מתכוני דמו הוסרו
 let db = { users: [], recipes: [] };
-
 async function loadCloudData() {
   try {
     const { data: recs, error: rErr } = await supabaseClient.from('recipes').select('*');
@@ -163,19 +162,18 @@ async function loadCloudData() {
       }
     }
 
-    // 👈 התוספת הקריטית! מרעננים את התצוגה אחרי שהנתונים נטענו
+    // הפקודה שמרעננת את התצוגה אחרי שהמידע ירד מהענן
     go(); 
 
   } catch (e) {
     console.error('שגיאה בטעינת נתונים מהענן:', e);
   }
 }
-
 const save = async () => {
   const user = me();
   if (user && typeof supabaseClient !== 'undefined') {
     try {
-      // 1. שולפים את הנתונים הקיימים כרגע בענן כדי לא לדרוס כלום
+      // 1. קודם שואבים את מה שיש בענן כדי לא למחוק אוספים קודמים
       const { data: existingData } = await supabaseClient
         .from('user_collections')
         .select('cols, skip')
@@ -183,19 +181,17 @@ const save = async () => {
       
       const cloudCols = (existingData && existingData.length > 0) ? (existingData[0].cols || {}) : {};
       
-      // 2. מיזוג חכם: מאחדים את האוספים שבענן עם מה שיש כרגע באפליקציה
+      // 2. ממזגים הכל יחד - גם מה שבענן וגם מה שבאפליקציה עכשיו
       user.cols = user.cols || {};
       for (const key in cloudCols) {
         if (!user.cols[key]) {
-           // אם האוסף מהענן חסר באפליקציה - נחזיר אותו
            user.cols[key] = cloudCols[key]; 
         } else {
-           // אם האוסף קיים בשניהם - נאחד את המתכונים בלי כפילויות
            user.cols[key] = [...new Set([...cloudCols[key], ...user.cols[key]])];
         }
       }
       
-      // 3. בונים את החבילה המלאה ושולחים לשרת
+      // 3. שומרים את הכל ל-Supabase
       const payload = {
         uid: user.id,
         cols: user.cols,
@@ -203,17 +199,12 @@ const save = async () => {
         updated_at: new Date().toISOString()
       };
       
-      const { error } = await supabaseClient
+      await supabaseClient
         .from('user_collections')
         .upsert(payload, { onConflict: 'uid' });
 
-      if (error) {
-        console.error("❌ שגיאה בשמירת Supabase:", error.message);
-      } else {
-        console.log("✅ הכל נשמר ומוזג בהצלחה ב-Supabase!");
-      }
     } catch (err) {
-      console.error("🔥 קריסה בלתי צפויה בשמירה:", err);
+      console.error("שגיאה בשמירה:", err);
     }
   }
 };
