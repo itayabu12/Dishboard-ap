@@ -143,7 +143,6 @@ if($('#skip')) $('#skip').onclick=e=>{e.preventDefault();main.focus()};
 const SEED = []; // מתכוני דמו הוסרו
 let db = { users: [], recipes: [] };
 
-
 async function loadCloudData() {
   try {
     const { data: recs, error: rErr } = await supabaseClient.from('recipes').select('*');
@@ -151,13 +150,16 @@ async function loadCloudData() {
       db.recipes = [...SEED, ...recs.filter(r => !SEED.some(s => s.id === r.id))];
     }
     const user = me();
+    console.log("Current Logged-in User ID:", user?.id); // 👈 תוסיף את זה
+    
     if (user) {
       const { data: colData, error: cErr } = await supabaseClient
         .from('user_collections')
         .select('*')
         .eq('uid', user.id);
       
-      // בדיקה בטוחה של המערך המוחזר מהשרת
+      console.log("Fetched Collections from Cloud:", colData, cErr); // 👈 וגם את זה
+      
       if (!cErr && colData && colData.length > 0) {
         user.cols = colData[0].cols || {};
         user.skip = colData[0].skip || [];
