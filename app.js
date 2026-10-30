@@ -150,7 +150,6 @@ async function loadCloudData() {
       db.recipes = [...SEED, ...recs.filter(r => !SEED.some(s => s.id === r.id))];
     }
     const user = me();
-    console.log("Current Logged-in User ID:", user?.id); // 👈 תוסיף את זה
     
     if (user) {
       const { data: colData, error: cErr } = await supabaseClient
@@ -158,13 +157,15 @@ async function loadCloudData() {
         .select('*')
         .eq('uid', user.id);
       
-      console.log("Fetched Collections from Cloud:", colData, cErr); // 👈 וגם את זה
-      
       if (!cErr && colData && colData.length > 0) {
         user.cols = colData[0].cols || {};
         user.skip = colData[0].skip || [];
       }
     }
+
+    // 👈 התוספת הקריטית! מרעננים את התצוגה אחרי שהנתונים נטענו
+    go(); 
+
   } catch (e) {
     console.error('שגיאה בטעינת נתונים מהענן:', e);
   }
