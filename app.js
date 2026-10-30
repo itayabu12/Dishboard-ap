@@ -528,27 +528,22 @@ home(u) {
             };
             
             if (sc) {
-              // הורדנו את ה-updated_at כי הוא לא קיים בטבלה הזו!
               const payload = { ...row };
-              
               if (isEdit) {
-                // מסירים את ה-id כדי למנוע חסימה
-                const { id: _ignoreId, ...updateData } = payload;
-                
+                const { id: _ignoreId, updated_at: _ignoreUpdatedAt, ...updateData } = payload;
                 const { data, error } = await sc.from('recipes')
                   .update(updateData)
                   .eq('id', newId)
                   .select();
                   
                 if (error) throw error;
-                
                 if (!data || data.length === 0) {
                   alert("⚠️ האפליקציה ניסתה לעדכן, אבל Supabase חסם את הפעולה! יש להיכנס ל-Supabase ולהוסיף הרשאת UPDATE (RLS) לטבלת recipes.");
                 }
-                
                 const idx = db.recipes.findIndex(x => x.id === newId);
                 if (idx !== -1) db.recipes[idx] = row; 
               } else {
+                const { id: _ignoreId, updated_at: _ignoreUpdatedAt, ...insertData } = payload;
                 const { data, error } = await sc.from('recipes').insert(payload).select().single();
                 if (error) throw error;
                 db.recipes.unshift(data || row);
