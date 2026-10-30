@@ -216,15 +216,18 @@ function pickFolder(r,u,done){
   const base=lang==='he'?['לבשל השבוע','ימים עמוסים','אירוח','מתוקים']:['Cook this week','Busy days','Hosting','Sweet things'];
   const names=[...new Set([...Object.keys(u.cols),...base])];
   const nw=h('input',{id:'nf',maxlength:'40',autocomplete:'off'});
-  const put=(n,e)=>{
-    n=clean(n,40);
-    if(!n)return;
-    u.cols[n]=u.cols[n]||[];
-    if(!u.cols[n].includes(r.id))u.cols[n].push(r.id);
-    save();
-    e.currentTarget.closest('dialog').close();
-    done(n);
-  };
+  const put = async (n, e) => {
+  n = clean(n, 40);
+  if (!n) return;
+  u.cols[n] = u.cols[n] || [];
+  if (!u.cols[n].includes(r.id)) u.cols[n].push(r.id);
+  
+  // 👈 חייב להיות כאן await לפני ה-save()
+  await save(); 
+  
+  e.currentTarget.closest('dialog').close();
+  done(n);
+};
   dlg(t('pickT'),h('div',{},
     h('div',{class:'chips'},...names.map(n=>h('button',{type:'button',class:'btn alt',onclick:e=>put(n,e)},n))),
     h('label',{for:'nf'},t('pickN')),
@@ -304,20 +307,53 @@ ctl=h('div',{class:'ctl'},h('button',{class:'btn alt',type:'button','aria-label'
 let list=deck(u);const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fly=(el,d,cb)=>{if(reduce||!el){cb();return}el.style.transition='transform .22s ease,opacity .22s';el.style.transform='translateX('+d*120+'%) rotate('+d*12+'deg)';el.style.opacity='0';setTimeout(cb,220)};
 const next=()=>{list.shift();draw()};
-function act(d){const r=list[0];if(!r)return;const el=stage.querySelector('.sw');if(d>0)pickFolder(r,u,n=>{live.textContent=t('savedTo',n);fly(el,1,next)});else{u.skip.push(r.id);save();live.textContent=t('skipped');fly(el,-1,next)}}
-function draw(){stage.replaceChildren();if(!list.length){ctl.hidden=true;info.textContent='';stage.append(h('div',{class:'end'},h('p',{},t('deckEnd')),h('button',{class:'btn',type:'button',onclick:()=>{u.skip=[];save();list=deck(u);draw()}},t('again'))));return}
-ctl.hidden=false;info.textContent=t('left',list.length);
-const r=list[0],x=(lang!=='he'&&r.tr&&r.tr[lang])||r,vl=vurl(r.vid),sy=h('span',{class:'stamp y','aria-hidden':'true'},t('save')),sn=h('span',{class:'stamp n','aria-hidden':'true'},t('skipB'));
-const el=h('article',{class:'sw','aria-label':x.title},IMG.test(r.img||'')?h('img',{src:r.img,alt:r.alt,draggable:'false'}):ph(r),
-h('div',{class:'in'},h('h2',{},x.title),h('p',{class:'meta'},(r.prep+r.cook)+' '+t('mins')+' · '+t(r.diff)+' · '+t('by')+' '+r.by),h('p',{class:'tags'},...r.cats.map(c=>h('span',{class:'tag'},t(c)))),h('h3',{},t('ingH')),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('h3',{},t('method')),h('p',{},x.desc),vl?h('a',{class:'btn alt',href:vl,target:'_blank',rel:'noopener noreferrer'},t('watch')):''));
-let sx=null;const reset=()=>{sx=null;el.classList.remove('drag');el.style.transform='';sy.style.opacity=0;sn.style.opacity=0};
-el.addEventListener('pointerdown',e=>{if(e.target.closest('a'))return;sx=e.clientX;el.classList.add('drag');el.setPointerCapture(e.pointerId)});
-el.addEventListener('pointermove',e=>{if(sx===null)return;const dx=e.clientX-sx;el.style.transform='translateX('+dx+'px) rotate('+dx/25+'deg)';sy.style.opacity=Math.max(0,Math.min(1,dx/100));sn.style.opacity=Math.max(0,Math.min(1,-dx/100))});
-el.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx;reset();if(dx>100)act(1);else if(dx<-100)act(-1)});
-el.addEventListener('pointercancel',reset);
-stage.append(el,sy,sn)}
+function act(d){
+  const r = list[0];
+  if (!r) return;
+  const el = stage.querySelector('.sw');
+  if (d > 0) {
+    pickFolder(r, u, n => { live.textContent = t('savedTo', n); fly(el, 1, next); });
+  } else {
+    // הוספנו כאן async לפונקציית החץ
+    (async () => {
+      u.skip.push(r.id);
+      await save();
+      live.textContent = t('skipped');
+      fly(el, -1, next);
+    })();
+  }
+}
+
+function draw(){
+  stage.replaceChildren();
+  if (!list.length) {
+    ctl.hidden = true;
+    info.textContent = '';
+    stage.append(h('div', {class: 'end'}, 
+      h('p', {}, t('deckEnd')), 
+      h('button', {class: 'btn', type: 'button', onclick: async () => { 
+        u.skip = []; 
+        await save(); // הוספנו כאן את ה-await הנכון עם async
+        list = deck(u); 
+        draw(); 
+      }}, t('again'))
+    ));
+    return;
+  }
+  ctl.hidden = false;
+  info.textContent = t('left', list.length);
+  const r = list[0], x = (lang !== 'he' && r.tr && r.tr[lang]) || r, vl = vurl(r.vid), sy = h('span', {class: 'stamp y', 'aria-hidden': 'true'}, t('save')), sn = h('span', {class: 'stamp n', 'aria-hidden': 'true'}, t('skipB'));
+  const el = h('article', {class: 'sw', 'aria-label': x.title}, IMG.test(r.img || '') ? h('img', {src: r.img, alt: r.alt, draggable: 'false'}) : ph(r),
+  h('div', {class: 'in'}, h('h2', {}, x.title), h('p', {class: 'meta'}, (r.prep + r.cook) + ' ' + t('mins') + ' · ' + t(r.diff) + ' · ' + t('by') + ' ' + r.by), h('p', {class: 'tags'}, ...r.cats.map(c => h('span', {class: 'tag'}, t(c)))), h('h3', {}, t('ingH')), h('ul', {}, ...x.ing.map(i => h('li', {}, i))), h('h3',{}, t('method')), h('p', {}, x.desc), vl ? h('a', {class: 'btn alt', href: vl, target: '_blank', rel: 'noopener noreferrer'}, t('watch')) : ''));
+  let sx = null; const reset = () => { sx = null; el.classList.remove('drag'); el.style.transform = ''; sy.style.opacity = 0; sn.style.opacity = 0; };
+  el.addEventListener('pointerdown', e => { if (e.target.closest('a')) return; sx = e.clientX; el.classList.add('drag'); el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e => { if (sx === null) return; const dx = e.clientX - sx; el.style.transform = 'translateX(' + dx + 'px) rotate(' + dx / 25 + 'deg)'; sy.style.opacity = Math.max(0, Math.min(1, dx / 100)); sn.style.opacity = Math.max(0, Math.min(1, -dx / 100)); });
+  el.addEventListener('pointerup', e => { if (sx === null) return; const dx = e.clientX - sx; reset(); if (dx > 100) act(1); else if (dx < -100) act(-1); });
+  el.addEventListener('pointercancel', reset);
+  stage.append(el, sy, sn);
+}
 draw();return h('section',{},h('h1',{},t('discover')),h('p',{class:'lede'},t('swipeH')),stage,ctl,info,live)},
-saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:()=>{u.cols[n]=u.cols[n].filter(i=>!ids.includes(i));if(!u.cols[n].length)delete u.cols[n];save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
+saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:async()=>{u.cols[n]=u.cols[n].filter(i=>!ids.includes(i));if(!u.cols[n].length)delete u.cols[n];await save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
 home(u) {
     let q = '';
     const mine = db.recipes.filter(r => r.uid === u.id);
