@@ -173,14 +173,19 @@ async function loadCloudData() {
 const save = async () => {
   const user = me();
   if (user && typeof supabaseClient !== 'undefined') {
+    // נוודא ששולחים את כל האוספים הקיימים של המשתמש
+    const payload = {
+      uid: user.id,
+      cols: user.cols || {},
+      skip: user.skip || [],
+      updated_at: new Date()
+    };
+    
+    console.log("Saving payload to Supabase:", payload); // לראות בקונסול מה נשלח
+
     const { error } = await supabaseClient
       .from('user_collections')
-      .upsert({
-        uid: user.id,
-        cols: user.cols || {},
-        skip: user.skip || [],
-        updated_at: new Date()
-      }, { onConflict: 'uid' });
+      .upsert(payload, { onConflict: 'uid' });
 
     if (error) {
       console.error('שגיאה בשמירת האוספים בשרת:', error.message);
