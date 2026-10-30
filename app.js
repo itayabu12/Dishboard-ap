@@ -177,20 +177,25 @@ const save = async () => {
     const payload = {
       uid: user.id,
       cols: user.cols || {},
-      skip: user.skip || []
+      skip: user.skip || [],
+      updated_at: new Date().toISOString() // 👈 הנה העמודה החסרה שתשחרר את התקיעה!
     };
     
     console.log("Sending to Supabase:", payload);
 
-    const { data, error } = await supabaseClient
-      .from('user_collections')
-      .upsert(payload, { onConflict: 'uid' })
-      .select();
+    try {
+      const { data, error } = await supabaseClient
+        .from('user_collections')
+        .upsert(payload, { onConflict: 'uid' })
+        .select();
 
-    if (error) {
-      console.error("❌ שגיאה בשמירת Supabase:", error.message, error.details, error.hint);
-    } else {
-      console.log("✅ נשמר בהצלחה ב-Supabase:", data);
+      if (error) {
+        console.error("❌ שגיאה בשמירת Supabase:", error.message, error.details);
+      } else {
+        console.log("✅ נשמר בהצלחה ב-Supabase:", data);
+      }
+    } catch (err) {
+      console.error("🔥 קריסה בלתי צפויה בשמירה:", err);
     }
   }
 };
