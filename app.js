@@ -69,7 +69,11 @@ const HERO=`<svg viewBox='0 0 600 150' role='presentation'><rect y='128' width='
 const PAT=`<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180' fill='none' stroke='#355a3a' stroke-opacity='.12' stroke-width='1.6' stroke-linecap='round'><path d='M20 40c8-14 22-18 30-14-4 12-16 20-30 14zM20 40l-8 10'/><path d='M120 30c6 10 4 22-4 28M120 30c-8 6-10 18-4 28'/><circle cx='140' cy='120' r='12'/><path d='M140 108v24M128 120h24'/><path d='M40 130c6 10 4 20 0 28M40 130c-6 10-4 20 0 28'/><path d='M80 90q10-16 20 0'/></svg>`;
 document.body.style.backgroundImage='url("data:image/svg+xml,'+encodeURIComponent(PAT)+'")';
 function ph(r){const d=h('div',{class:'ph c-'+(r.cats[0]||'x'),'aria-hidden':'true'});d.innerHTML=STILL;return d}
-function heroArt(){const d=h('div',{class:'art','aria-hidden':'true'});d.innerHTML=HERO;return d}
+function heroArt() {
+  return h('div', { class: 'art', 'aria-hidden': 'true' },
+    h('img', { src: 'hero.jpg', alt: 'מטבח פתוח', style: 'width: 100%; height: 100%; object-fit: cover; border-radius: 8px;' })
+  );
+}
 Object.assign(D,{remember:['השאירו אותי מחובר/ת במכשיר הזה','Keep me signed in on this device'],fridgeL:['מה יש לך במקרר?','What’s in your fridge?'],fridgeH:['רשמו מצרכים מופרדים בפסיקים ונמצא מתכונים שמתאימים. בקרוב: צילום המקרר.','List ingredients separated by commas and we’ll find matching recipes. Coming soon: photograph your fridge.'],bySearch:['חיפוש חופשי','Search'],byFridge:['מה יש במקרר','From my fridge'],modeL:['שיטת חיפוש','Search mode'],have:['יש לך','You have'],of:['מתוך','of'],miss:['חסר','Missing'],fridgeH2:['כתבו מה יש לכם במקרר כדי לראות מתכונים מתאימים.','Type what you have to see matching recipes.']});
 let lang='he';
 const t = (k, n) => (D[k] ? D[k][lang === 'he' ? 0 : 1] : k).replace('{n}', n || '');const pers=(k,v)=>{const c=store.get('fm_consent',null);if(c&&c.pref)store.set(k,v)};
