@@ -411,10 +411,11 @@ saved(u) {
                 type: 'button', 
                 onclick: async () => {
                   if (u.cols && u.cols[n]) {
+                    // מסננים החוצה רק את המתכון שעליו לחצנו
                     u.cols[n] = u.cols[n].filter(i => i !== r.id);
-                    if (u.cols[n].length === 0) {
-                      delete u.cols[n];
-                    }
+                    
+                    // הוסר ה-delete! האוסף נשאר כמערך ריק והענן מתעדכן בהתאם.
+                    
                     await save();
                     go();
                   }
