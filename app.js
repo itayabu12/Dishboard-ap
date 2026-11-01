@@ -388,7 +388,45 @@ function draw(){
   stage.append(el, sy, sn);
 }
 draw();return h('section',{},h('h1',{},t('discover')),h('p',{class:'lede'},t('swipeH')),stage,ctl,info,live)},
-saved(u){const ents=Object.entries(u.cols).filter(([n,ids])=>ids.some(id=>db.recipes.some(r=>r.id===id)));return h('section',{},h('h1',{},t('saved')),ents.length?ents.map(([n,ids])=>h('section',{class:'fold'},h('h2',{},n+' · '+ids.length),h('ul',{class:'lst'},...ids.map(id=>db.recipes.find(r=>r.id===id)).filter(Boolean).map(r=>{const x=(lang!=='he'&&r.tr&&r.tr[lang])||r;return h('li',{},h('details',{},h('summary',{},x.title),h('ul',{},...x.ing.map(i=>h('li',{},i))),h('p',{},x.desc)),h('button',{class:'lnk',type:'button',onclick:async()=>{u.cols[n]=u.cols[n].filter(i=>!ids.includes(i));if(!u.cols[n].length)delete u.cols[n];await save();go()}},t('rm'),h('span',{class:'sr'},' – '+x.title)))})))):h('p',{class:'meta'},t('emptyCol')))},
+saved(u) {
+  const ents = Object.entries(u.cols).filter(([n, ids]) => ids.some(id => db.recipes.some(r => r.id === id)));
+  
+  return h('section', {}, 
+    h('h1', {}, t('saved')), 
+    ents.length ? ents.map(([n, ids]) => 
+      h('section', { class: 'fold' }, 
+        h('h2', {}, n + ' · ' + ids.length), 
+        h('ul', { class: 'lst' }, 
+          ...ids.map(id => db.recipes.find(r => r.id === id)).filter(Boolean).map(r => {
+            const x = (lang !== 'he' && r.tr && r.tr[lang]) || r;
+            
+            return h('li', {}, 
+              h('details', {}, 
+                h('summary', {}, x.title), 
+                h('ul', {}, ...x.ing.map(i => h('li', {}, i))), 
+                h('p', {}, x.desc)
+              ), 
+              h('button', {
+                class: 'lnk', 
+                type: 'button', 
+                onclick: async () => {
+                  if (u.cols && u.cols[n]) {
+                    u.cols[n] = u.cols[n].filter(i => i !== r.id);
+                    if (u.cols[n].length === 0) {
+                      delete u.cols[n];
+                    }
+                    await save();
+                    go();
+                  }
+                }
+              }, t('rm'), h('span', { class: 'sr' }, ' – ' + x.title))
+            );
+          })
+        )
+      )
+    ) : h('p', { class: 'meta' }, t('emptyCol'))
+  );
+},
 home(u) {
     let q = '';
     const mine = db.recipes.filter(r => r.uid === u.id);
