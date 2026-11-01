@@ -181,14 +181,13 @@ const save = async () => {
       
       const cloudCols = (existingData && existingData.length > 0) ? (existingData[0].cols || {}) : {};
       
-      // 2. ממזגים הכל יחד - גם מה שבענן וגם מה שבאפליקציה עכשיו
+      // 2. ממזגים הכל יחד - אבל רק אוספים שחסרים, בלי למזג בחזרה מתכונים שמחקנו!
       user.cols = user.cols || {};
       for (const key in cloudCols) {
         if (!user.cols[key]) {
            user.cols[key] = cloudCols[key]; 
-        } else {
-           user.cols[key] = [...new Set([...cloudCols[key], ...user.cols[key]])];
         }
+        // ה-else שהיה פה נמחק לחלוטין כדי לא לדרוס את המחיקה שלך
       }
       
       // 3. שומרים את הכל ל-Supabase
