@@ -101,24 +101,36 @@ function acctBox() {
       )
     );
 
-    const actions = h('div', { class: 'row', style: 'justify-content: space-between; gap: 1rem;' },
-      h('button', { class: 'btn danger', type: 'button', style: 'flex: 1;', onclick: () => dlg(t('delAccT'), h('p', {}, t('delAccB')), [[t('delAll', async () => {
+    const actions = h('div', { class: 'row', style: 'justify-content: space-between; gap: 1rem; align-items: center;' },
+      
+      // 1. כפתור מחיקת החשבון המקורי שלך
+      h('button', { 
+        class: 'btn danger', 
+        type: 'button', 
+        style: 'flex: 1;', 
+        onclick: () => dlg(t('delAccT'), h('p', {}, t('delAccB')), [[t('delAll'), async () => {
         if (typeof supabaseClient !== 'undefined') {
           const ids = db.recipes.filter(r => r.uid === u.id).map(r => r.id);
           if (ids.length > 0) await supabaseClient.from('recipes').delete().in('id', ids);
           await supabaseClient.from('user_collections').delete().eq('uid', u.id);
           await supabaseClient.auth.signOut();
         }
-        db.recipes = db.recipes.filter(r => r.uid !== u.id);
-        user = null; STATUS = t('okAcc'); nav('recipes');
-      }), 'danger'], [t('cancel'), null, 'alt']]) }, t('delAcc')),
-      
-      h('button', { class: 'btn alt', type: 'button', style: 'flex: 1;', onclick: async () => {
-        if(typeof supabaseClient !== 'undefined') await supabaseClient.auth.signOut();
-        user = null; STATUS = t('okOut'); nav('recipes'); document.querySelector('dialog')?.close();
-      }}, t('logout'))
-    );
+      }], [t('cancel'), null, 'alt']])
+      }, t('delAccT')),
 
+      // 2. כפתור תנאי שימוש וזכויות יוצרים החדש שנוסיף לידו
+      h('button', { 
+        class: 'btn alt', 
+        type: 'button', 
+        style: 'flex: 1;', 
+        onclick: () => {
+          dlg('תנאי שימוש וזכויות יוצרים', h('div', { style: 'font-size: 0.9rem; line-height: 1.5; text-align: right;' },
+            h('p', {}, '1. האפליקציה משמשת פלטפורמה שיתופית בלבד. המפעילים אינם אחראים לטיב המתכונים, אלרגיות או תוצאות במטבח.'),
+            h('p', {}, '2. זכויות היוצרים על המתכונים שייכות למשתמשים שהעלו אותם. חל איסור להעלות תכנים המפרים זכויות יוצרים (כגון כתבות מאתרי חדשות ובלוגים מסחריים).')
+          ), [['סגור', null]]);
+        } 
+      }, 'תנאי שימוש 📜')
+    );
     box.append(
       h('h3', { style: 'margin-bottom: 1rem; font-size: 1.2rem;' }, t('acc')), 
       profileHeader, 
