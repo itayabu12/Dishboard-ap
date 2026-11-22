@@ -64,6 +64,14 @@ Object.assign(D, {
   updateBtn: ['עדכון מתכון', 'Update recipe']
 });
 
+Object.assign(D, {
+  pasteTextBtn: ['📋 הדבקת טקסט חופשי', 'Paste free text'],
+  pasteTitle: ['הדבקת מתכון חופשי', 'Paste recipe text'],
+  pasteHint: ['הדבק כאן מתכון מכל מקום (ג׳מיני, וואטסאפ, אתר) — נמלא את הטופס אוטומטית ותוכל לבדוק ולערוך לפני פרסום.', 'Paste a recipe from anywhere — we will prefill the form so you can review and edit before publishing.'],
+  parseBtn: ['נתח והעבר לטופס', 'Parse and fill form'],
+  pasteEmpty: ['יש להדביק קודם טקסט של מתכון.', 'Please paste recipe text first.']
+});
+
 const STILL=`<svg viewBox='0 0 200 133' preserveAspectRatio='xMidYMid slice' role='presentation'><g fill='none' stroke='#8a7a5a' stroke-width='2' stroke-linecap='round' opacity='.55'><path d='M85 40c-6-8 6-12 0-22'/><path d='M100 38c-6-8 6-12 0-24'/><path d='M115 40c-6-8 6-12 0-22'/></g><path d='M50 68h100c0 26-20 44-50 44S50 94 50 68z' fill='#a8643a'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='#e6b95c'/><ellipse cx='100' cy='68' rx='50' ry='9' fill='none' stroke='#8a4f2b' stroke-width='2'/><circle cx='86' cy='66' r='4' fill='#c8452f'/><circle cx='108' cy='69' r='3.5' fill='#6d9a4e'/><circle cx='122' cy='66' r='3' fill='#c8452f'/><path d='M60 120h80' stroke='#8a4f2b' stroke-width='3' stroke-linecap='round'/><g transform='translate(30 100)'><circle r='11' fill='#c8452f'/><path d='M-4-10c2-4 6-4 8 0' stroke='#4f7a3a' stroke-width='2.5' fill='none'/></g><ellipse cx='168' cy='104' rx='13' ry='10' fill='#ecc84a' transform='rotate(-20 168 104)'/><g fill='#5f8a4a'><ellipse cx='160' cy='70' rx='10' ry='4' transform='rotate(-35 160 70)'/><ellipse cx='172' cy='60' rx='10' ry='4' transform='rotate(-70 172 60)'/><ellipse cx='150' cy='58' rx='9' ry='3.5' transform='rotate(-5 150 58)'/></g><path d='M165 72c-3 8-4 14-4 22' stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'/></svg>`;
 const HERO=`<svg viewBox='0 0 600 150' role='presentation'><rect y='128' width='600' height='22' fill='#d8b98a'/><rect y='128' width='600' height='3' fill='#b8935f'/><g fill='none' stroke='#9a8d70' stroke-width='3' stroke-linecap='round' opacity='.55'><path d='M70 58c-8-10 8-14 0-26'/><path d='M92 56c-8-10 8-14 0-28'/><path d='M114 58c-8-10 8-14 0-26'/></g><path d='M38 72h104v44a12 12 0 0 1-12 12H50a12 12 0 0 1-12-12z' fill='#5f7a52'/><rect x='32' y='66' width='116' height='9' rx='4' fill='#4a6240'/><circle cx='28' cy='84' r='5' fill='#4a6240'/><circle cx='152' cy='84' r='5' fill='#4a6240'/><path d='M170 128L206 46' stroke='#a4703c' stroke-width='7' stroke-linecap='round'/><ellipse cx='210' cy='38' rx='11' ry='15' fill='#b9824a' transform='rotate(18 210 38)'/><circle cx='258' cy='108' r='19' fill='#c8452f'/><circle cx='294' cy='114' r='15' fill='#d4533a'/><circle cx='273' cy='88' r='14' fill='#c8452f'/><g stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'><path d='M251 91c4-4 9-4 14 0M288 101c3-3 7-3 11 0M267 76c3-3 7-3 11 0'/></g><path d='M350 86c14 8 22 22 22 36 0 6-10 8-22 8s-22-2-22-8c0-14 8-28 22-36z' fill='#f4ecd6' stroke='#cdbf99' stroke-width='2'/><path d='M350 86v-8' stroke='#cdbf99' stroke-width='3' stroke-linecap='round'/><ellipse cx='418' cy='114' rx='26' ry='17' fill='#ecc84a' transform='rotate(-12 418 114)'/><ellipse cx='410' cy='108' rx='9' ry='4' fill='#f6e08a' transform='rotate(-12 410 108)'/><g fill='#5f8a4a'><ellipse cx='488' cy='96' rx='13' ry='6' transform='rotate(-40 488 96)'/><ellipse cx='506' cy='82' rx='13' ry='6' transform='rotate(-75 506 82)'/><ellipse cx='474' cy='80' rx='12' ry='5.5' transform='rotate(-10 474 80)'/></g><path d='M480 128c4-14 8-24 12-34' stroke='#4f7a3a' stroke-width='3' fill='none' stroke-linecap='round'/><circle cx='556' cy='108' r='20' fill='#c58a4a'/><path d='M556 88c-8 10-8 30 0 40M556 88c8 10 8 30 0 40' stroke='#a56f35' stroke-width='2' fill='none'/><path d='M556 88v-8' stroke='#a56f35' stroke-width='3' stroke-linecap='round'/></svg>`;
 const PAT=`<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180' fill='none' stroke='#355a3a' stroke-opacity='.12' stroke-width='1.6' stroke-linecap='round'><path d='M20 40c8-14 22-18 30-14-4 12-16 20-30 14zM20 40l-8 10'/><path d='M120 30c6 10 4 22-4 28M120 30c-8 6-10 18-4 28'/><circle cx='140' cy='120' r='12'/><path d='M140 108v24M128 120h24'/><path d='M40 130c6 10 4 20 0 28M40 130c-6 10-4 20 0 28'/><path d='M80 90q10-16 20 0'/></svg>`;
@@ -465,12 +473,106 @@ home(u) {
     );
   },
   
+
+
+
+
   
   
-  
+  parseRecipeText(rawText) {
+    const cleanText = String(rawText || '').replace(/\r\n/g, '\n').trim();
+    if (!cleanText) {
+      return { title: '', ing: [], desc: '', prep: '', cook: '', diff: 'easy', cats: [], emoji: '🍳' };
+    }
+
+    const lines = cleanText.split('\n').map(l => l.trim()).filter(Boolean);
+    const isHeaderLine = s => /^(מרכיבים|מצרכים|רכיבים|מה צריך|אופן ההכנה|הכנה|שלבי הכנה|שלבים|הוראות|ingredients|instructions|steps|directions)\s*:?\s*$/i.test(s);
+    const isListPrefix = s => /^([-•*▸▪▫]|\d+[.)\-])\s*/.test(s);
+
+    let title = '';
+    let startIdx = 0;
+    if (lines.length > 1 && !isListPrefix(lines[0]) && !isHeaderLine(lines[0]) && lines[0].length <= 80) {
+      title = lines[0].replace(/^#+\s*/, '').replace(/^מתכון(?:\s*ל)?:\s*/i, '').trim();
+      startIdx = 1;
+    }
+
+    let prep = '';
+    let cook = '';
+    const prepMatch = cleanText.match(/(?:זמן הכנה|הכנה)\s*[:\-–]?\s*(\d{1,3})\s*(?:דק|דקות|min)/i);
+    const cookMatch = cleanText.match(/(?:זמן בישול|בישול|אפייה)\s*[:\-–]?\s*(\d{1,3})\s*(?:דק|דקות|min)/i);
+    if (prepMatch) prep = prepMatch[1];
+    if (cookMatch) cook = cookMatch[1];
+
+    const lowerAll = cleanText.toLowerCase();
+    const cats = [];
+    if (/טבעוני|vegan/.test(lowerAll)) cats.push('vegan');
+    if (/צמחוני|vegetarian/.test(lowerAll)) cats.push('veg');
+    if (/בשרי|עוף|בשר|בקר|meat|chicken|beef/.test(lowerAll)) cats.push('meat');
+    if (/מאפה|מאפים|עוגה|בצק|לחם|pastry|bake|cake|bread/.test(lowerAll)) cats.push('pastry');
+    if (/מהיר|10 דקות|15 דקות|20 דקות|quick/.test(lowerAll)) cats.push('quick');
+    if (/חסכוני|זול|budget/.test(lowerAll)) cats.push('budget');
+
+    const emojiMatch = cleanText.match(/[\u{1F300}-\u{1FAFF}]/u);
+    const emoji = emojiMatch ? emojiMatch[0] : '🍳';
+
+    const ing = [];
+    const steps = [];
+    let secMode = 'auto';
+
+    for (let i = startIdx; i < lines.length; i++) {
+      const rawLine = lines[i].replace(/^#+\s*/, '').trim();
+
+      if (/^(מרכיבים|מצרכים|רכיבים|מה צריך|ingredients)\s*:?\s*$/i.test(rawLine)) {
+        secMode = 'ing';
+        continue;
+      }
+      if (/^(אופן ההכנה|הכנה|שלבי הכנה|שלבים|הוראות הכנה|instructions|steps|directions)\s*:?\s*$/i.test(rawLine)) {
+        secMode = 'steps';
+        continue;
+      }
+      if (/^(הערות|טיפים|notes|tips)\s*:?\s*$/i.test(rawLine)) {
+        secMode = 'notes';
+        continue;
+      }
+      if (/^(זמן הכנה|זמן בישול|זמן אפייה)\s*[:\-–]?\s*\d{1,3}\s*(דק|דקות|min)/i.test(rawLine)) {
+        continue;
+      }
+
+      const hadNumber = /^\d+[.)\-]\s+/.test(rawLine);
+      const hadBullet = /^([-•*▸▪▫]|\d+[.)\-])\s+/.test(rawLine);
+      const itemText = rawLine.replace(/^([-•*▸▪▫]|\d+[.)\-])\s+/, '').trim();
+      if (!itemText) continue;
+
+      if (secMode === 'ing') {
+        ing.push(itemText);
+      } else if (secMode === 'steps' || secMode === 'notes') {
+        steps.push(itemText);
+      } else {
+        const looksLikeIngredient =
+          !hadNumber &&
+          itemText.length <= 75 &&
+          (hadBullet || /\d|\b(כוס|כוסות|כף|כפות|כפית|כפיות|גרם|ק"ג|מ"ל|ליטר|שיני שום|בצל|ביצה|ביצים|מלח|פלפל|שמן|מים)\b/i.test(itemText));
+
+        if (looksLikeIngredient) ing.push(itemText);
+        else steps.push(itemText);
+      }
+    }
+
+    return {
+      title,
+      ing,
+      desc: steps.join('\n').trim(),
+      prep,
+      cook,
+      diff: 'easy',
+      cats,
+      emoji
+    };
+  },
+
   add(u) {
     const draft = window.fmDraft || null;
-    window.fmDraft = null; 
+    window.fmDraft = null;
     const isEdit = draft && draft._mode === 'edit';
 
     const cats = h('fieldset', {}, h('legend', {}, t('cats')), h('div', { style: 'display:flex;flex-wrap:wrap' }, ...CATS.map(c => h('label', { class: 'cb' }, h('input', { type: 'checkbox', value: c }), t(c)))));
@@ -489,11 +591,11 @@ home(u) {
         if (!text || text.trim() === '') throw new Error('לא זוהה טקסט');
         const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
         let title = lines[0] || 'מתכון סרוק';
-        let ing = [], meth = [], mode = 'meth';
+        let ing = [], meth = [], secMode = 'meth';
         lines.forEach(l => {
-          if (l.includes('רכיבים') || l.includes('מצרכים')) mode = 'ing';
-          else if (l.includes('הכנה') || l.includes('אופן')) mode = 'meth';
-          else if (mode === 'ing') ing.push(l);
+          if (l.includes('רכיבים') || l.includes('מצרכים')) secMode = 'ing';
+          else if (l.includes('הכנה') || l.includes('אופן')) secMode = 'meth';
+          else if (secMode === 'ing') ing.push(l);
           else meth.push(l);
         });
         if (ing.length === 0 && meth.length > 4) { ing = meth.slice(0, 4); meth = meth.slice(4); }
@@ -502,85 +604,125 @@ home(u) {
       } catch (err) {
         if (st) st.textContent = lang === 'he' ? 'הסריקה נכשלה. נסו להזין ידנית.' : 'Scan failed.';
       } finally {
-        const btn = wrap.querySelector('#sbtn'); if(btn) btn.disabled = false;
+        const btn = wrap.querySelector('#sbtn'); if (btn) btn.disabled = false;
         e.target.value = '';
       }
     };
     scanInput.onchange = onScan;
 
+    const renderPasteBox = () => {
+      const ta = h('textarea', {
+        id: 'rawRecipeText',
+        rows: '10',
+        placeholder: lang === 'he'
+          ? 'לדוגמה:\nשקשוקה מהירה\n\nמצרכים:\n- 4 עגבניות\n- 4 ביצים\n- 2 כפות שמן זית\n- מלח ופלפל\n\nאופן ההכנה:\n1. מחממים שמן זית במחבת.\n2. מוסיפים עגבניות ומבשלים 10 דקות.\n3. שוברים פנימה ביצים ומכסים.'
+          : 'Paste recipe text here...'
+      });
+      const errMsg = h('p', { class: 'err', hidden: true, style: 'margin-top: 0.5rem;' });
+
+      const parseBox = h('div', { style: 'max-width: 680px; margin: 0 auto;' },
+        h('div', { style: 'display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;' },
+          h('button', { type: 'button', class: 'lnk', onclick: () => renderChoice() }, lang === 'he' ? '⟵ חזרה לבחירה' : '⟵ Back')
+        ),
+        h('h2', { style: 'margin-bottom: 0.5rem;' }, lang === 'he' ? 'הדבקת מתכון חופשי' : 'Paste recipe text'),
+        h('p', { class: 'meta', style: 'margin-bottom: 1rem;' },
+          lang === 'he'
+            ? 'הדבק כאן מתכון מכל מקום (ג׳מיני, וואטסאפ, אתר) — נמלא את הטופס אוטומטית ותוכל לבדוק ולערוך לפני פרסום.'
+            : 'Paste a recipe from anywhere — we will fill the form so you can review and edit before publishing.'
+        ),
+        ta,
+        errMsg,
+        h('div', { class: 'row', style: 'margin-top: 1rem;' },
+          h('button', {
+            type: 'button',
+            class: 'btn',
+            onclick: () => {
+              const parsed = V.parseRecipeText(ta.value);
+              if (!parsed.title && !parsed.ing.length && !parsed.desc) {
+                errMsg.textContent = lang === 'he' ? 'יש להדביק קודם טקסט של מתכון.' : 'Please paste recipe text first.';
+                errMsg.hidden = false;
+                return;
+              }
+              renderForm(false, parsed);
+            }
+          }, lang === 'he' ? 'נתח והעבר לטופס' : 'Parse and fill form')
+        )
+      );
+
+      wrap.replaceChildren(h('h1', { id: 'sh' }, t('add')), parseBox);
+    };
+
     const renderChoice = () => {
       const choiceBox = h('div', { class: 'choice-box', style: 'text-align:center; padding: 3rem 0;' },
         h('h2', { style: 'margin-bottom: 2rem;' }, lang === 'he' ? 'איך תרצו להוסיף את המתכון?' : 'How would you like to add?'),
-        h('div', { class: 'row', style: 'justify-content: center; gap: 1rem;' },
+        h('div', { class: 'row', style: 'justify-content: center; gap: 1rem; flex-wrap: wrap;' },
           h('button', { type: 'button', class: 'btn alt', onclick: () => renderForm() }, lang === 'he' ? '✏️ הזנה ידנית' : 'Manual Entry'),
+          h('button', { type: 'button', class: 'btn alt', onclick: () => renderPasteBox() }, lang === 'he' ? '📋 הדבקת טקסט חופשי' : 'Paste Text'),
           h('button', { type: 'button', class: 'btn yes', onclick: () => scanInput.click() }, lang === 'he' ? '📸 סריקה מתמונה' : 'Scan Image')
         ), scanInput
       );
       wrap.replaceChildren(h('h1', { id: 'sh' }, t('add')), choiceBox);
     };
 
-    const renderForm = (isLoading = false) => {
+    const renderForm = (isLoading = false, parsedData = null) => {
       const f = h('form', {
-        novalidate: true, 
+        novalidate: true,
         onsubmit: async e => {
           e.preventDefault();
           const btn = f.querySelector('button[type=submit]'); if (btn.disabled) return;
           const q = i => f.querySelector('#' + i), errs = [], T = clean(q('t').value, 80), d = clean(q('d').value, 1500), ing = q('i').value.split('\n').map(x => clean(x, 120)).filter(Boolean).slice(0, 40),
             pr = +q('p').value, ck = +q('c').value, file = q('im').files[0], alt = clean(q('a').value, 150), vr = q('v').value.trim();
-          
-          // קליטת האימוגי כאן בהתחלה
+
           const emojiVal = clean(q('emj').value, 5) || '🍳';
 
-          // בדיקות התקינות קודם כל
-          if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') }); 
-          if (!ing.length) errs.push({ id: 'i', msg: t('eIng') }); 
+          if (T.length < 3) errs.push({ id: 't', msg: t('eTitle') });
+          if (!ing.length) errs.push({ id: 'i', msg: t('eIng') });
           if (d.length < 10) errs.push({ id: 'd', msg: t('eMeth') });
-          if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') }); 
+          if (q('p').value === '' || !(pr >= 0 && pr <= 600)) errs.push({ id: 'p', msg: t('eTime') });
           if (q('c').value === '' || !(ck >= 0 && ck <= 600)) errs.push({ id: 'c', msg: t('eTime') });
-          if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') }); 
+          if (vr && !vurl(vr)) errs.push({ id: 'v', msg: t('eVid') });
 
           showErrs(f, errs); if (errs.length) return;
           btn.disabled = true;
           let img = '', path = '';
-          
+
           try {
             const sc = typeof supabaseClient !== 'undefined' ? supabaseClient : SB;
-            
+
             if (file) {
               path = (u ? u.id : 'public') + '/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-              
-              const up = await sc.storage.from(BUCKET).upload(path, file, { 
+
+              const up = await sc.storage.from(BUCKET).upload(path, file, {
                 contentType: file.type || 'image/jpeg',
-                upsert: true 
+                upsert: true
               });
-              
+
               if (up.error) throw new Error(up.error.message);
-              
+
               const urlData = sc.storage.from(BUCKET).getPublicUrl(path);
               img = urlData.data.publicUrl;
             }
-            
+
             const newId = isEdit ? draft.id : crypto.randomUUID();
             const finalImg = img || (draft ? draft.img : '');
-            
-            // בניית אובייקט ה-row מתבצעת כאן, אחרי שיש לנו את newId ו-finalImg
-            const row = { 
-              id: newId, 
-              uid: u ? u.id : 'anon', 
-              by: u ? u.name : 'Guest', 
-              title: T, 
-              desc: d, 
-              ing, 
-              prep: pr, 
-              cook: ck, 
-              diff: q('df').value, 
-              cats: [...cats.querySelectorAll('input:checked')].map(x => x.value), 
-              img: finalImg, 
-              emoji: emojiVal, // שמירת האימוגי שבחרת
-              alt: alt || T, 
-              vid: vr ? vurl(vr) : '' 
+
+            const row = {
+              id: newId,
+              uid: u ? u.id : 'anon',
+              by: u ? u.name : 'Guest',
+              title: T,
+              desc: d,
+              ing,
+              prep: pr,
+              cook: ck,
+              diff: q('df').value,
+              cats: [...cats.querySelectorAll('input:checked')].map(x => x.value),
+              img: finalImg,
+              emoji: emojiVal,
+              alt: alt || T,
+              vid: vr ? vurl(vr) : ''
             };
-            
+
             if (sc) {
               const payload = { ...row };
               if (isEdit) {
@@ -589,13 +731,13 @@ home(u) {
                   .update(updateData)
                   .eq('id', newId)
                   .select();
-                  
+
                 if (error) throw error;
                 if (!data || data.length === 0) {
                   alert("⚠️ האפליקציה ניסתה לעדכן, אבל Supabase חסם את הפעולה! יש להיכנס ל-Supabase ולהוסיף הרשאת UPDATE (RLS) לטבלת recipes.");
                 }
                 const idx = db.recipes.findIndex(x => x.id === newId);
-                if (idx !== -1) db.recipes[idx] = row; 
+                if (idx !== -1) db.recipes[idx] = row;
               } else {
                 const { id: _ignoreId, updated_at: _ignoreUpdatedAt, ...insertData } = payload;
                 const { data, error } = await sc.from('recipes').insert(payload).select().single();
@@ -606,13 +748,13 @@ home(u) {
             STATUS = t('okPub'); nav('home');
           } catch (x) {
             console.error('תקלה כללית בשמירה:', x);
-            btn.disabled = false; 
+            btn.disabled = false;
             alert('שגיאה בשמירת התמונה/מתכון: ' + (x.message || x));
           }
         }
       },
         sum(),
-        (!isEdit && !draft ? h('div', { style: 'display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;' }, 
+        (!isEdit && !draft ? h('div', { style: 'display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;' },
           h('button', { type: 'button', class: 'lnk', onclick: () => renderChoice() }, lang === 'he' ? '⟵ חזרה לבחירה' : '⟵ Back'),
           h('button', { type: 'button', class: 'btn alt', onclick: () => scanInput.click() }, lang === 'he' ? '📸 סריקה נוספת' : 'Scan again')
         ) : ''),
@@ -631,30 +773,34 @@ home(u) {
         fld(t('vid'), 'v', h('input', { id: 'v', type: 'url', inputmode: 'url', dir: 'ltr', autocomplete: 'off' }), t('vidH')),
         h('div', { class: 'row' }, h('button', { id: 'sbtn', class: 'btn', type: 'submit' }, isEdit ? t('updateBtn') : t('publish')))
       );
-      
-      if (draft) {
+
+      const sourceData = draft || parsedData;
+      if (sourceData) {
         setTimeout(() => {
           const q = i => f.querySelector('#' + i);
-          if(q('t')) q('t').value = draft.title + (draft._mode === 'dup' ? (lang === 'he' ? ' (עותק)' : ' (Copy)') : '');
-          if(q('i')) q('i').value = (draft.ing || []).join('\n');
-          if(q('d')) q('d').value = draft.desc || '';
-          if(q('p')) q('p').value = draft.prep || 15;
-          if(q('c')) q('c').value = draft.cook || 45;
-          if(q('df')) q('df').value = draft.diff || 'easy';
-          if(q('emj')) q('emj').value = draft.emoji || '';
-          if(draft.cats) { cats.querySelectorAll('input').forEach(cb => { cb.checked = draft.cats.includes(cb.value); }); }
+          const titleVal = draft
+            ? (draft.title + (draft._mode === 'dup' ? (lang === 'he' ? ' (עותק)' : ' (Copy)') : ''))
+            : (parsedData.title || '');
+          if (q('t') && titleVal) q('t').value = titleVal;
+          if (q('i') && (sourceData.ing || []).length) q('i').value = (sourceData.ing || []).join('\n');
+          if (q('d') && sourceData.desc) q('d').value = sourceData.desc;
+          if (q('p') && sourceData.prep !== '') q('p').value = sourceData.prep;
+          if (q('c') && sourceData.cook !== '') q('c').value = sourceData.cook;
+          if (q('df') && sourceData.diff) q('df').value = sourceData.diff;
+          if (q('emj') && sourceData.emoji) q('emj').value = sourceData.emoji;
+          if (sourceData.cats && sourceData.cats.length) {
+            cats.querySelectorAll('input').forEach(cb => { cb.checked = sourceData.cats.includes(cb.value); });
+          }
         }, 0);
       }
-      
+
       wrap.replaceChildren(h('h1', { id: 'sh' }, isEdit ? t('edit') : (draft ? t('add') : t('add'))), f);
-      if (isLoading) { const btn = wrap.querySelector('#sbtn'); if(btn) btn.disabled = true; }
+      if (isLoading) { const btn = wrap.querySelector('#sbtn'); if (btn) btn.disabled = true; }
     };
 
     if (draft) renderForm(); else renderChoice();
     return wrap;
   },
-
-
 
 acc(u){
   const out=()=>{sess=null;try{sessionStorage.removeItem('fm_s')}catch(e){}u.tok='';save();store.del('fm_rem')};
